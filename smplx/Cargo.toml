@@ -17,28 +17,12 @@ default = []
 
 full = [
     "default",
-    "ds",
     "serde",
 ]
 
-### [DS] Data Structures
-ds = [
-    "hypergraph",
-    "petgraph",
-]
-
-# [FF] Dependencies
-hypergraph = [
-    "dep:hypergraph",
-]
-
-petgraph = [
-    "dep:petgraph",
-]
-
+# ********* [FF] Dependencies *********
 serde = [
     "dep:serde",
-    "petgraph?/serde",
     "rstmt/serde",
 ]
 
@@ -50,23 +34,9 @@ test = true
 
 [build-dependencies]
 
-[dev-dependencies]
-anyhow.workspace = true
-lazy_static.workspace = true
-
 [dependencies]
-rstmt.workspace = true # v0.0.2
+rstmt.workspace = true # v0.0.3
 thiserror.workspace = true
-
-[dependencies.hypergraph]
-optional = true
-features = []
-version = "2.1"
-
-[dependencies.petgraph]
-features = []
-optional = true
-version = "0.6"
 
 [dependencies.serde]
 features = ["derive"]
@@ -77,10 +47,14 @@ version = "1"
 features = ["derive"]
 version = "0.26"
 
+[dev-dependencies]
+anyhow.workspace = true
+lazy_static.workspace = true
+
 [package.metadata.docs.rs]
 all-features = true
 rustc-args = ["--cfg", "docsrs"]
 
-[target.wasm32-unknown-unknown.dependencies]
+[target.wasm32-unknown-unknown]
 
 [target.wasm32-wasi]

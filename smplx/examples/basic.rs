@@ -4,8 +4,6 @@
 */
 extern crate smplx;
 
-
 fn main() -> anyhow::Result<()> {
-
     Ok(())
 }

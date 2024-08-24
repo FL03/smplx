@@ -14,8 +14,6 @@ pub mod complex;
 pub mod set;
 pub mod simplex;
 #[doc(hidden)]
-pub mod space;
-#[doc(hidden)]
 pub mod state;
 
 pub mod prelude {

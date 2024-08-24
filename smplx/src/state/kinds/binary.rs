@@ -3,11 +3,9 @@
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 
-pub trait Binary {
-    fn a(&self) -> &str;
-    fn b(&self) -> &str;
-    
-}
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum Binary {}
 
 #[derive(
     Clone,
@@ -47,12 +45,12 @@ pub trait Binary {
         strum::VariantNames
     )
 )]
-pub enum BinaryState<Q = ()> {
+pub enum BinState<Q = ()> {
     Invalid(Q),
     Valid(Q),
 }
 
-impl<Q> BinaryState<Q> {
+impl<Q> BinState<Q> {
     pub fn invalid(state: Q) -> Self {
         Self::Invalid(state)
     }
@@ -84,7 +82,7 @@ impl<Q> BinaryState<Q> {
     }
 }
 
-impl<Q> AsRef<Q> for BinaryState<Q> {
+impl<Q> AsRef<Q> for BinState<Q> {
     fn as_ref(&self) -> &Q {
         match self {
             Self::Invalid(q) => q,
@@ -93,7 +91,7 @@ impl<Q> AsRef<Q> for BinaryState<Q> {
     }
 }
 
-impl<Q> AsMut<Q> for BinaryState<Q> {
+impl<Q> AsMut<Q> for BinState<Q> {
     fn as_mut(&mut self) -> &mut Q {
         match self {
             Self::Invalid(q) => q,
@@ -102,13 +100,13 @@ impl<Q> AsMut<Q> for BinaryState<Q> {
     }
 }
 
-impl<Q: Default> Default for BinaryState<Q> {
+impl<Q: Default> Default for BinState<Q> {
     fn default() -> Self {
         Self::Invalid(Q::default())
     }
 }
 
-impl<Q> core::ops::Deref for BinaryState<Q> {
+impl<Q> core::ops::Deref for BinState<Q> {
     type Target = Q;
 
     fn deref(&self) -> &Self::Target {
@@ -116,13 +114,13 @@ impl<Q> core::ops::Deref for BinaryState<Q> {
     }
 }
 
-impl<Q> core::ops::DerefMut for BinaryState<Q> {
+impl<Q> core::ops::DerefMut for BinState<Q> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.as_mut()
     }
 }
 
-impl<Q> core::fmt::Display for BinaryState<Q>
+impl<Q> core::fmt::Display for BinState<Q>
 where
     Q: core::fmt::Display,
 {
