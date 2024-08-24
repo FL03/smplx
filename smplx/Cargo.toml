@@ -13,7 +13,9 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = []
+default = [
+    "alloc",
+]
 
 full = [
     "default",
@@ -21,10 +23,19 @@ full = [
 ]
 
 # ********* [FF] Dependencies *********
+alloc = [
+    "serde?/alloc",
+]
+
 serde = [
     "dep:serde",
-    "rstmt/serde",
 ]
+
+# ********* [FF] Environments *********
+# std = [
+#     "alloc",
+#     "serde?/std",
+# ]
 
 [lib]
 bench = true
@@ -35,7 +46,6 @@ test = true
 [build-dependencies]
 
 [dependencies]
-rstmt.workspace = true # v0.0.3
 thiserror.workspace = true
 
 [dependencies.serde]

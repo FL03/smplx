@@ -6,6 +6,10 @@
 //!
 //! smplx is a research project supporting the Flow protocol
 #![crate_name = "smplx"]
+#![crate_type = "lib"]
+
+#[cfg(feature = "alloc")]
+extern crate alloc;
 
 #[doc(inline)]
 pub use self::simplex::Simplex;
@@ -13,6 +17,7 @@ pub use self::simplex::Simplex;
 pub mod complex;
 pub mod set;
 pub mod simplex;
+
 #[doc(hidden)]
 pub mod state;
 

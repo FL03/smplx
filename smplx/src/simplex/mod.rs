@@ -12,6 +12,7 @@
 //! 
 //! "A k-simplex, is a k-dimensional polytope which is the convex hull of its k+1 vertices."
 //! - [Wikipedia](https://en.wikipedia.org/wiki/Simplex)
+//! 
 //!
 //! ### Regular Simplex
 //!

@@ -12,7 +12,7 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
-rstmt = { features = ["neo"], git = "https://github.com/FL03/rstmt.git", branch = "v0.0.3" }
+# rstmt = { features = ["neo"], git = "https://github.com/FL03/rstmt.git", branch = "v0.0.3" }
 
 anyhow = "1"
 lazy_static = "1"
