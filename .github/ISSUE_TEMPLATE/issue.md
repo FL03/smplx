@@ -1,9 +1,6 @@
 ---
 about: A generic issue template
-assignees:
-    - FL03
-labels: []
-projects: ['@FL03/concision:features']
+assignees: [ FL03 ]
 name: Generic Issue
 title: ''
 ---

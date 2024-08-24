@@ -4,7 +4,7 @@
 */
 use core::marker::PhantomData;
 
-#[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct State<T, Q> {
     pub(crate) data: T,
@@ -20,10 +20,8 @@ impl<T, Q> State<T, Q> {
         &self.data
     }
 
-
-
-    pub fn is_state<Q2: 'static>(&self) -> bool where Q: 'static {
+    pub fn is_state<R: 'static>(&self) -> bool where Q: 'static {
         use core::any::TypeId;
-        TypeId::of::<Q>() == TypeId::of::<Q2>()
+        TypeId::of::<Q>() == TypeId::of::<R>()
     }
 }

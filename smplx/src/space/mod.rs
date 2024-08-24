@@ -11,13 +11,10 @@
 //! 
 //! 
 //! unit of computability is considered to be a triad 
+#![allow(unused)]
 #[doc(inline)]
-pub use self::{
-    state::BinaryState,
-    venv::TopoVenv,
-};
+pub use self::venv::TopoVenv;
 
-pub mod state;
 pub mod venv;
 
 #[cfg(feature = "petgraph")]
@@ -26,7 +23,6 @@ pub type TriadGraph = petgraph::Graph<String, u8, petgraph::Directed>;
 pub type TriadId = String;
 
 pub(crate) mod prelude {
-    pub use super::state::BinaryState;
     pub use super::venv::TopoVenv;
     #[cfg(feature = "petgraph")]
     pub use super::TriadGraph;

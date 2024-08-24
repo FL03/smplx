@@ -2,19 +2,22 @@
 
 [![crates.io](https://img.shields.io/crates/v/concision.svg)](https://crates.io/crates/smplx)
 [![docs.rs](https://docs.rs/concision/badge.svg)](https://docs.rs/smplx)
+[![license](https://img.shields.io/crates/l/smplx.svg)](https://crates.io/crates/smplx)
 
 [![clippy](https://github.com/FL03/smplx/actions/workflows/clippy.yml/badge.svg)](https://github.com/FL03/smplx/actions/workflows/clippy.yml)
 [![rust](https://github.com/FL03/smplx/actions/workflows/rust.yml/badge.svg)](https://github.com/FL03/smplx/actions/workflows/rust.yml)
 
 ***
 
-### _The library is currently in the early stages of development and is not yet ready for production use._
+_**The library is currently in the early stages of development and is not yet ready for production use.**_
 
-smplx is a research project supporting the Flow protocol 
+Welcome to smplx, a topologically oriented crate focused on simplexes and their complexes.
 
 ## Features
 
-
+- [ ] Simplex
+- [ ] Complex
+- [ ] Set
 
 ## Getting Started
 
@@ -33,14 +36,16 @@ cargo build --features full -r --workspace
 
 ## Usage
 
-### Example: Linear Model (biased)
+### Examples
+
+#### _Simplex_
 
 ```rust
     extern crate smplx;
 
-    fn main() -> anyhow::Result<()> {
+    fn main() -> Result<(), Box<dyn std::error::Error>> {
         tracing_subscriber::fmt::init();
-        tracing::info!("Starting linear model example");
+        tracing::info!("Welcome to smplx!");
 
 
         Ok(())
