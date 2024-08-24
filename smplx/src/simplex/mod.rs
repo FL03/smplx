@@ -4,17 +4,28 @@
 */
 //! # Simplex
 //!
-//! A simplex is defined to be the smallest polytope in any dimension, consisting of the convex hull of its vertices.
+//! A simplex is a fundamental topological object often used to construct larger abstractions.
+//! Simplices are notable for being the smallest possible polytope in any dimension and are
+//! generalizations of common geometric objects such as points, line segments, and triangles.
+//! 
+//! ## Definitions
+//! 
+//! "A k-simplex, is a k-dimensional polytope which is the convex hull of its k+1 vertices."
+//! - [Wikipedia](https://en.wikipedia.org/wiki/Simplex)
 //!
-//! ## Regular Simplex
+//! ### Regular Simplex
 //!
-//! A regular simplex is one which is also a regular polytope; listed below are several
-//! exampels of regular simplices:
+//! A regular simplex is one which is also a regular polytope. Regular simplices may be 
+//! constructed from a regular (n-1)-simplex by connecting a new vertex to all original 
+//! vertices by common edge length.
 //!
-//! - Point: 0-simplex
-//! - Line segment: 1-simplex
-//! - Triangle: 2-simplex
-//! - Tetrahedron: 3-simplex
+//! |        Shape | Regular Simplex |
+//! |--------------|-----------------|
+//! |     Point    |    0-simplex    |
+//! | Line Segment |    1-simplex    |
+//! |   Triangle   |    2-simplex    |
+//! |  Tetrahedron |    3-simplex    |
+//! |-|-|
 //!
 #[doc(inline)]
 pub use self::object::Simplex;
