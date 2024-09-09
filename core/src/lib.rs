@@ -12,13 +12,11 @@
 extern crate alloc;
 
 #[doc(inline)]
-pub use self::{error::Error, pt::Container};
+pub use self::{error::Error, pt::Point};
 
 pub mod error;
 pub mod ops;
 pub mod pt;
-#[doc(hidden)]
-pub mod state;
 pub mod traits;
 pub mod types;
 

@@ -55,7 +55,6 @@ test = true
 
 [dependencies]
 
-
 [dependencies.num]
 default-features = false
 version = "0.4"
@@ -72,8 +71,6 @@ features = ["derive"]
 version = "0.26"
 
 [dev-dependencies]
-anyhow.workspace = true
-lazy_static.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true

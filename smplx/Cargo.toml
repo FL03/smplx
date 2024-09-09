@@ -55,6 +55,9 @@ test = true
 [dependencies]
 thiserror.workspace = true
 
+[dependencies.ndarray]
+version = "0.16"
+
 [dependencies.smplx-core]
 path = "../core"
 version = "0.0.1-nightly"
