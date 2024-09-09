@@ -7,6 +7,7 @@
 #[derive(Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Simplex<V, E> {
+    /// The dimension of the simplex.
     pub(crate) dim: usize,
     /// The set of edges in the simplex.
     pub(crate) edges: Vec<E>,
