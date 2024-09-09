@@ -13,16 +13,16 @@ extern crate alloc;
 
 #[doc(inline)]
 pub use self::simplex::Simplex;
+#[doc(inline)]
+pub use smplx_core::*;
 
 pub mod complex;
 pub mod set;
 pub mod simplex;
 
-#[doc(hidden)]
-pub mod state;
-
 pub mod prelude {
     pub use super::complex::prelude::*;
     pub use super::set::prelude::*;
     pub use super::simplex::prelude::*;
+    pub use smplx_core::prelude::*;
 }

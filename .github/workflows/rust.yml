@@ -25,8 +25,8 @@ on:
 permissions: write-all
 
 jobs:
-  build:
-    name: Build
+  workspace:
+    name: Workspace
     strategy:
       matrix:
         platform: [ macos-latest, ubuntu-latest, windows-latest ]
@@ -34,7 +34,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
-      - name: setup (rustup)
+      - name: rustup
         run: |
           rustup default ${{ matrix.toolchain }}
           rustup update
@@ -51,8 +51,10 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
+            target/debug
             target/release
           restore-keys: |
             ${{ runner.os }}-cargo-${{ matrix.toolchain }}-${{ hashFiles('**/Cargo.lock') }}
             ${{ runner.os }}-cargo-${{ matrix.toolchain }}-
             ${{ runner.os }}-cargo-
+            ${{ runner.os }}-

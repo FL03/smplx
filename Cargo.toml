@@ -5,7 +5,7 @@ default-members = [
 
 exclude = []
 
-members = [
+members = [ "core",
     "smplx",
 ]
 
@@ -23,7 +23,7 @@ thiserror = "1"
 # petgraph = "0.6"
 
 [workspace.package]
-authors = ["Joe McCain III <jo3mccain@icloud.com>",]
+authors = ["FL03 <jo3mccain@icloud.com>",]
 categories = [ ]
 description = "smplx is a topologically oriented crate focused on developing out a framework for working with simplicial objects in Rust."
 edition = "2021"
@@ -32,7 +32,7 @@ keywords = [ ]
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/smplx.git"
-version = "0.0.1-alpha"
+version = "0.0.1-nightly.v1"
 
 [profile.dev]
 opt-level = 0

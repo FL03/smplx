@@ -36,18 +36,16 @@ pub use self::object::Simplex;
 
 mod object;
 
+pub mod n_simplex;
+
 pub(crate) mod prelude {
     pub use super::object::Simplex;
 }
 
-pub trait Node {
+pub trait RawNode {
     type Weight;
 }
 
-pub trait Link<A, B> {
+pub trait RawLink<A, B> {
     type Data;
-}
-
-pub trait Simplicial {
-    type Dim;
 }

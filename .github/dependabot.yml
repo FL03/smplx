@@ -4,9 +4,13 @@ updates:
   - package-ecosystem: cargo
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
   - package-ecosystem: github-actions
     directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: cargo
+    directory: /core
     schedule:
       interval: weekly
   - package-ecosystem: cargo
