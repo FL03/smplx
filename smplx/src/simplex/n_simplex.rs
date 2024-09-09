@@ -2,13 +2,13 @@
     Appellation: n_simplex <module>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
+#![allow(dead_code)]
 
 pub struct Node<T: ?Sized>(pub T);
 
-
 pub struct NSimplex<T> {
-    dim: usize,
-    nodes: Vec<Node<T>>,
+    pub(crate) dim: usize,
+    pub(crate) nodes: Vec<Node<T>>,
 }
 
 impl<T> NSimplex<T> {
