@@ -7,14 +7,14 @@ edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "smplx"
+name = "smplx-core"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
 [features]
 default = [
-    "alloc",
+    "std",
 ]
 
 full = [
@@ -25,24 +25,25 @@ full = [
 
 # ********* [FF] Dependencies *********
 alloc = [
+    "num/alloc",
     "serde?/alloc",
-    "smplx-core/alloc",
 ]
 
 rand = [
-    "smplx-core/rand",
+    "num/rand",
 ]
 
 serde = [
     "dep:serde",
-    "smplx-core/serde",
+    "num/serde"
 ]
 
 # ********* [FF] Environments *********
-# std = [
-#     "alloc",
-#     "serde?/std",
-# ]
+std = [
+    "alloc",
+    "num/std",
+    "serde?/std",
+]
 
 [lib]
 bench = true
@@ -53,18 +54,20 @@ test = true
 [build-dependencies]
 
 [dependencies]
-thiserror.workspace = true
 
-[dependencies.smplx-core]
-path = "../core"
-version = "0.0.1-nightly"
+
+[dependencies.num]
+default-features = false
+version = "0.4"
 
 [dependencies.serde]
+default-features = false
 features = ["derive"]
 optional = true
 version = "1"
 
 [dependencies.strum]
+default-features = false
 features = ["derive"]
 version = "0.26"
 
@@ -79,3 +82,4 @@ rustc-args = ["--cfg", "docsrs"]
 [target.wasm32-unknown-unknown]
 
 [target.wasm32-wasi]
+

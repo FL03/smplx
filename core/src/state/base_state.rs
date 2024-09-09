@@ -4,16 +4,16 @@
 */
 use core::marker::PhantomData;
 
-/// [State] is an abstract object that allows a particular _kind_ of state to be associated
+/// [BaseState] is an abstract object that allows a particular _kind_ of state to be associated
 /// with some data.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct State<Q, T> {
+pub struct BaseState<Q, T> {
     pub(crate) data: T,
     pub(crate) _state: PhantomData<Q>,
 }
 
-impl<Q, T> State<Q, T> {
+impl<Q, T> BaseState<Q, T> {
     pub fn new(data: T) -> Self {
         Self {
             data,
