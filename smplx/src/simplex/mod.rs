@@ -36,6 +36,8 @@ pub use self::object::Simplex;
 
 mod object;
 
+pub mod simple;
+
 pub(crate) mod prelude {
     pub use super::object::Simplex;
 }

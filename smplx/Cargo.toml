@@ -14,7 +14,7 @@ version.workspace = true
 
 [features]
 default = [
-    "alloc",
+    "std",
 ]
 
 full = [
@@ -24,18 +24,22 @@ full = [
 
 # ********* [FF] Dependencies *********
 alloc = [
+    "nalgebra/alloc",
     "serde?/alloc",
 ]
 
 serde = [
     "dep:serde",
+    "nalgebra/serde",
+    "serde?/derive"
 ]
 
 # ********* [FF] Environments *********
-# std = [
-#     "alloc",
-#     "serde?/std",
-# ]
+std = [
+    "alloc",
+    "nalgebra/std",
+    "serde?/std",
+]
 
 [lib]
 bench = true
@@ -46,20 +50,16 @@ test = true
 [build-dependencies]
 
 [dependencies]
-thiserror.workspace = true
+nalgebra = { default-features = false, version = "0.33" }
+num = { default-features = false, version = "0.4" }
+serde = { default-features = false, optional = true, version = "1" }
+strum = { default-features = false, features = ["derive"], version = "0.26" }
+thiserror = { default-features = false, version = "2" }
 
-[dependencies.serde]
-features = ["derive"]
-optional = true
-version = "1"
-
-[dependencies.strum]
-features = ["derive"]
-version = "0.26"
 
 [dev-dependencies]
-anyhow.workspace = true
-lazy_static.workspace = true
+anyhow = "1"
+lazy_static = "1"
 
 [package.metadata.docs.rs]
 all-features = true
