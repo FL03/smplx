@@ -7,7 +7,7 @@ pub trait Factorial {
 }
 
 /*
-    ************* Implementations *************
+ ************* Implementations *************
 */
 macro_rules! impl_factorial {
     ($($t:ty),* $(,)?) => {

@@ -14,7 +14,7 @@ extern crate alloc;
 #[doc(inline)]
 pub use self::{simplex::Simplex, traits::prelude::*};
 
-
+pub mod point;
 pub mod simplex;
 
 #[doc(hidden)]
@@ -27,7 +27,7 @@ pub mod traits {
 
     pub(crate) mod prelude {
         pub use super::math::*;
-    } 
+    }
 }
 
 pub mod prelude {
