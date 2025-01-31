@@ -30,12 +30,7 @@ where
     }
 }
 
-impl<S> Point<S>
-where
-    S: RawPoint,
-{
-    
-}
+impl<S> Point<S> where S: RawPoint {}
 
 macro_rules! raw_scalar {
     ($($t:ty),*) => {

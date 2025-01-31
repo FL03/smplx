@@ -32,7 +32,6 @@
 //! |-|-|
 //!
 
-
 mod impl_simplex;
 
 /// A simplex is a generalization of the notion of a triangle or tetrahedron to arbitrary
@@ -49,7 +48,17 @@ mod tests {
 
     #[test]
     fn test_simplex() {
-        let vertices = [0.0, 0.0, 0.0, 1.0, -1.0, 0.0];
-        let _simplex = Simplex::from_iterator(2, vertices);
+        // vertices: [0, 0], [0, 1], [1, 0]
+        let vertices = vec![0f64, 0f64, 0f64, 1f64, 1f64, 0f64];
+
+        let simplex = Simplex::from_row_iterator(2, vertices.clone());
+
+        for (i, j) in [(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]
+            .iter()
+            .zip(vertices.iter())
+        {
+            println!("{i:?}: {:?}", simplex.get_vertex(i.0));
+            assert_eq!(simplex.get_vertex(i.0)[i.1], *j);
+        }
     }
 }

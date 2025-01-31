@@ -11,6 +11,8 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
+extern crate nalgebra as na;
+
 #[doc(inline)]
 pub use self::{point::Point, simplex::Simplex, traits::prelude::*};
 
@@ -21,8 +23,10 @@ pub mod simplex;
 pub mod state;
 
 pub mod traits {
+    #[doc(inline)]
     pub use self::prelude::*;
 
+    pub mod hkt;
     pub mod math;
 
     pub(crate) mod prelude {

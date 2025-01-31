@@ -26,7 +26,7 @@ mod tests {
     #[test]
     fn test_point() {
         let p = Point::new(42u8);
-        
+
         assert_eq!(*p.data(), 42u8);
         assert_eq!(*p.map(|i| i + 1).data(), 43u8);
 

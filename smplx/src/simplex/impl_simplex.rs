@@ -4,9 +4,11 @@
 */
 use super::Simplex;
 use crate::Factorial;
-use nalgebra::{ComplexField, DMatrix, Scalar};
+use nalgebra::{ComplexField, Const, DMatrix, Scalar};
 
+use nalgebra::base::{Dyn, Matrix, ViewStorage};
 
+type RowView<'a, T> = Matrix<T, Const<1>, Dyn, ViewStorage<'a, T, Const<1>, Dyn, Const<1>, Dyn>>;
 
 impl<T> Simplex<T> {
     /// Constructs a new simplex from an (N+1) x N matrix
@@ -23,14 +25,29 @@ impl<T> Simplex<T> {
         }
     }
 
-    pub fn from_iterator<I>(n: usize, vertices: I) -> Self where I: IntoIterator<Item = T>, T: Scalar {
-        let vertices = DMatrix::from_iterator(n + 1, n, vertices);
-        Self::new(n, vertices)
+    pub fn from_row_iterator<I>(n: usize, vertices: I) -> Self
+    where
+        I: IntoIterator<Item = T>,
+        T: Scalar,
+    {
+        let points = DMatrix::from_row_iterator(n + 1, n, vertices);
+        Self::new(n, points)
+    }
+
+    pub fn get_vertex(&self, i: usize) -> RowView<'_, T> {
+        self.pointset.row(i)
+    }
+
+    pub fn vertices(&self) -> Vec<RowView<'_, T>>
+    where
+        T: Scalar,
+    {
+        self.pointset.row_iter().collect::<Vec<_>>()
     }
     /// Computes the volume of the n-simplex using the cayley-menger determinant
-    /// 
+    ///
     /// The volume of an n-simplex is given by the formula:
-    /// 
+    ///
     /// $V = \frac{1}{n!} \sqrt{|\Delta|^2}$
     pub fn volume(&self) -> T
     where
@@ -39,4 +56,3 @@ impl<T> Simplex<T> {
         self.pointset.determinant().abs() / T::from_usize(self.dim.factorial()).unwrap()
     }
 }
-
