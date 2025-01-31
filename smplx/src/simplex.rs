@@ -31,25 +31,25 @@
 //! |  Tetrahedron |    3-simplex    |
 //! |-|-|
 //!
-#[doc(inline)]
-pub use self::object::Simplex;
 
-mod object;
 
-pub mod simple;
+mod impl_simplex;
 
-pub(crate) mod prelude {
-    pub use super::object::Simplex;
+/// A simplex is a generalization of the notion of a triangle or tetrahedron to arbitrary
+/// dimensions.
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct Simplex<T> {
+    dim: usize,
+    pointset: nalgebra::DMatrix<T>, // (N+1) x N matrix
 }
 
-pub trait Node {
-    type Weight;
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-pub trait Link<A, B> {
-    type Data;
-}
-
-pub trait Simplicial {
-    type Dim;
+    #[test]
+    fn test_simplex() {
+        let vertices = [0.0, 0.0, 0.0, 1.0, -1.0, 0.0];
+        let _simplex = Simplex::from_iterator(2, vertices);
+    }
 }

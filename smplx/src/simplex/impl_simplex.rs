@@ -2,21 +2,13 @@
     Appellation: simple <module>
     Contrib: @FL03
 */
+use super::Simplex;
 use crate::Factorial;
 use nalgebra::{ComplexField, DMatrix, Scalar};
 
-/// A simplex is a generalization of the notion of a triangle or tetrahedron to arbitrary
-/// dimensions.
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Simplex<T> {
-    dim: usize,
-    pointset: DMatrix<T>, // (N+1) x N matrix
-}
 
-impl<T> Simplex<T>
-where
-    T: Scalar + num::Num + num::traits::FromPrimitive,
-{
+
+impl<T> Simplex<T> {
     /// Constructs a new simplex from an (N+1) x N matrix
     pub fn new(n: usize, vertices: DMatrix<T>) -> Self {
         assert_eq!(vertices.nrows(), n + 1, "Simplex must have N+1 vertices.");
@@ -31,12 +23,15 @@ where
         }
     }
 
-    pub fn from_iterator<I: IntoIterator<Item = T>>(n: usize, vertices: I) -> Self {
+    pub fn from_iterator<I>(n: usize, vertices: I) -> Self where I: IntoIterator<Item = T>, T: Scalar {
         let vertices = DMatrix::from_iterator(n + 1, n, vertices);
         Self::new(n, vertices)
     }
-    /// Computes the volume of the n-simplex using determinant
-    ///
+    /// Computes the volume of the n-simplex using the cayley-menger determinant
+    /// 
+    /// The volume of an n-simplex is given by the formula:
+    /// 
+    /// $V = \frac{1}{n!} \sqrt{|\Delta|^2}$
     pub fn volume(&self) -> T
     where
         T: ComplexField<RealField = T>,
@@ -45,13 +40,3 @@ where
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_simplex() {
-        let vertices = [0.0, 0.0, 0.0, 1.0, -1.0, 0.0];
-        let _simplex = Simplex::from_iterator(2, vertices);
-    }
-}
