@@ -12,17 +12,25 @@
 extern crate alloc;
 
 #[doc(inline)]
-pub use self::simplex::Simplex;
+pub use self::{simplex::Simplex, traits::prelude::*};
 
-pub mod complex;
-pub mod set;
+
 pub mod simplex;
 
 #[doc(hidden)]
 pub mod state;
 
+pub mod traits {
+    pub use self::prelude::*;
+
+    pub mod math;
+
+    pub(crate) mod prelude {
+        pub use super::math::*;
+    } 
+}
+
 pub mod prelude {
-    pub use super::complex::prelude::*;
-    pub use super::set::prelude::*;
-    pub use super::simplex::prelude::*;
+    pub use crate::simplex::prelude::*;
+    pub use crate::traits::prelude::*;
 }
