@@ -2,17 +2,16 @@
     Appellation: barycentric <module>
     Contrib: @FL03
 */
-use nalgebra::{RealField, Scalar, Vector2, Vector3};
+use nalgebra::{Point2, RealField, Scalar, Vector3};
 
-pub fn barycentric_coordinates<T>(triangle: &[Vector2<T>], point: &Vector2<T>) -> Vector3<T>
+pub fn barycentric_coordinates<T>(vertices: &[Point2<T>], point: &Point2<T>) -> Vector3<T>
 where
     T: Copy + RealField + Scalar + num::Num,
 {
-    // let point = na::convert::<na::Point2<T>, Vector3<T>>(*point);
     // define the coordinate vectors
-    let v0 = triangle[1] - triangle[0];
-    let v1 = triangle[2] - triangle[0];
-    let v2 = point - triangle[0];
+    let v0 = vertices[1] - vertices[0];
+    let v1 = vertices[2] - vertices[0];
+    let v2 = point - vertices[0];
     // precompute elements of the formula
     let d00 = v0.dot(&v0);
     let d01 = v0.dot(&v1);
@@ -29,21 +28,21 @@ where
     Vector3::new(u, v, w)
 }
 
-#[derive(Debug)]
-pub struct Barycentric<S = f64> {
-    coords: Vector3<S>,
-}
+// #[derive(Debug)]
+// pub struct Barycentric<S = f64> {
+//     coords: Vector3<S>,
+// }
 
-impl<S> Barycentric<S> {
-    pub fn from_cartesian(simplex: &[Vector2<S>], point: &Vector2<S>) -> Self
-    where
-        S: Copy + RealField + Scalar + num::Num,
-    {
-        Barycentric {
-            coords: barycentric_coordinates(simplex, point),
-        }
-    }
-}
+// impl<S> Barycentric<S> {
+//     pub fn from_cartesian(simplex: &[Vector2<S>], point: &Vector2<S>) -> Self
+//     where
+//         S: Copy + RealField + Scalar + num::Num,
+//     {
+//         Barycentric {
+//             coords: barycentric_coordinates(simplex, point),
+//         }
+//     }
+// }
 
 #[cfg(test)]
 mod tests {
@@ -54,12 +53,12 @@ mod tests {
     #[test]
     fn test_barycentric() {
         let simplex = vec![
-            Vector2::from_vec(vec![3.0, 2.0]),
-            Vector2::from_vec(vec![5.0, 3.0]),
-            Vector2::from_vec(vec![3.0, 4.0]),
+            Point2::new(3.0, 2.0),
+            Point2::new(5.0, 3.0),
+            Point2::new(3.0, 4.0),
         ];
     
-        let position = Vector2::new(0.3, 0.3);
+        let position = Point2::new(0.3, 0.3);
         
         let coords = barycentric_coordinates(&simplex, &position);
         
