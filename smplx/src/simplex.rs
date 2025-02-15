@@ -36,8 +36,18 @@ mod impl_simplex;
 
 use nalgebra::{Point, Scalar};
 
-pub struct DSimplex<T, const D: usize> where T: Scalar {
-    nodes: Vec<Point<T, D>>
+
+pub trait RawNode {
+    ///
+    type Key;
+}
+
+pub trait RawSimplex {
+    type Node: RawNode;
+}
+
+pub struct DSimplex<T, const D: usize> where T: Scalar, [T; D + 1]: Sized {
+    nodes: [Point<T, D>; D + 1]
 }
 
 

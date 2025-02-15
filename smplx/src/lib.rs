@@ -8,6 +8,7 @@
 #![crate_name = "smplx"]
 #![crate_type = "lib"]
 
+#![feature(generic_const_exprs)]
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
