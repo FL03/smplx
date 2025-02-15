@@ -8,7 +8,9 @@
 #![crate_name = "smplx"]
 #![crate_type = "lib"]
 
+#![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
+
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
