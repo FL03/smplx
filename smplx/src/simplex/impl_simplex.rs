@@ -48,7 +48,7 @@ where
         &self.nodes
     }
 
-    pub fn convert_cartesian_to_barycentric(&self, point: Point<T, D>) -> na::DVector<T>
+    pub fn convert_cartesian_to_barycentric(&self, point: Point<T, D>) -> na::SVector<T, { D + 1 }>
     where
         T: Copy + na::RealField,
     {

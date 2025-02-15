@@ -3,21 +3,22 @@
     Contrib: @FL03
 */
 
-use nalgebra::{DMatrix, DVector, Point};
-use nalgebra::{Point2, RealField, Scalar, Vector3};
+use nalgebra::DMatrix;
+use nalgebra::{Point, Point2, RealField, Scalar, SVector, Vector3};
 
-use crate::NSimplex;
 
 /// [dynbary] computes the barycentric coordinates of a point in an n-simplex.
-pub fn dynbary<T, const D: usize>(simplex: &[Point<T, D>; D + 1], point: &Point<T, D>) -> DVector<T>
+pub fn dynbary<T, const D: usize>(simplex: &[Point<T, D>; D + 1], point: &Point<T, D>) -> SVector<T, {D + 1}>
 where
     T: Copy + RealField + Scalar,
 {
-    assert_eq!(D + 1, simplex.len(), "The number of vertices must be N+1.");
-
-    let mut matrix = DMatrix::zeros(D + 1, D + 1);
-    let mut rhs = DVector::zeros(D + 1);
-
+    let n = D + 1;
+    // verify the shape of the simplex 
+    assert_eq!(D + 1, simplex.len(), "A simplex contains exactly N+1 n-dimensional points.");
+    // initialize a matrix for the simplex points
+    let mut matrix = DMatrix::zeros(n, n);
+    // initialize a vector for the right-hand side
+    let mut rhs = SVector::<T, {D + 1}>::zeros();
     // Fill matrix with simplex points (homogeneous form)
     for i in 0..=D {
         for j in 0..D {
@@ -33,7 +34,7 @@ where
     rhs[D] = T::one(); // Homogeneous coordinate
 
     // Solve for barycentric coordinates
-    let bary_coords = matrix.lu().solve(&rhs).unwrap_or(DVector::zeros(D + 1));
+    let bary_coords = matrix.lu().solve(&rhs).unwrap_or(SVector::<T, {D + 1}>::zeros());
 
     bary_coords
 }
