@@ -37,20 +37,9 @@ mod impl_simplex;
 use nalgebra::{Point, Scalar};
 
 
-pub trait RawNode {
-    ///
-    type Key;
+pub struct NSimplex<T, const N: usize> where T: Scalar, [T; N + 1]: Sized {
+    nodes: [Point<T, N>; N + 1]
 }
-
-pub trait RawSimplex {
-    type Node: RawNode;
-}
-
-pub struct DSimplex<T, const D: usize> where T: Scalar, [T; D + 1]: Sized {
-    nodes: [Point<T, D>; D + 1]
-}
-
-
 
 /// A simplex is a generalization of the notion of a triangle or tetrahedron to arbitrary
 /// dimensions.
