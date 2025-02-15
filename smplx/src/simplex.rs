@@ -39,7 +39,8 @@ mod impl_simplex;
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Simplex<T> {
     dim: usize,
-    pointset: nalgebra::DMatrix<T>, // (N+1) x N matrix
+    angles: nalgebra::DMatrix<T>, // (N+1) x N matrix
+    nodes: nalgebra::DMatrix<T>,  // (N+1) x N matrix
 }
 
 #[cfg(test)]
@@ -49,9 +50,10 @@ mod tests {
     #[test]
     fn test_simplex() {
         // vertices: [0, 0], [0, 1], [1, 0]
+        let angles = vec![0f64, 0f64, 0f64, 0f64, 0f64, 0f64];
         let vertices = vec![0f64, 0f64, 0f64, 1f64, 1f64, 0f64];
 
-        let simplex = Simplex::from_row_iterator(2, vertices.clone());
+        let simplex = Simplex::from_row_iterator(2, angles.clone(),  vertices.clone());
 
         for (i, j) in [(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]
             .iter()

@@ -12,37 +12,76 @@ type RowView<'a, T> = Matrix<T, Const<1>, Dyn, ViewStorage<'a, T, Const<1>, Dyn,
 
 impl<T> Simplex<T> {
     /// Constructs a new simplex from an (N+1) x N matrix
-    pub fn new(n: usize, vertices: DMatrix<T>) -> Self {
-        assert_eq!(vertices.nrows(), n + 1, "Simplex must have N+1 vertices.");
+    pub fn new(dim: usize, angles: DMatrix<T>, nodes: DMatrix<T>) -> Self {
+        assert_eq!(nodes.nrows(), dim + 1, "Simplex must have N+1 vertices.");
         assert_eq!(
-            vertices.ncols(),
-            n,
+            nodes.ncols(),
+            dim,
             "Each vertex must be in N-dimensional space."
         );
+        Self { dim, angles, nodes }
+    }
+
+    pub fn ones(dim: usize) -> Self
+    where
+        T: Scalar + num::One,
+    {
+        let angles = DMatrix::from_element(dim + 1, dim, T::one());
+        let nodes = DMatrix::from_element(dim + 1, dim, T::one());
+        Self::new(dim, angles, nodes)
+    }
+
+    pub fn zeros(dim: usize) -> Self
+    where
+        T: Scalar + num::Zero,
+    {
+        let angles = DMatrix::zeros(dim + 1, dim);
+        let nodes = DMatrix::zeros(dim + 1, dim);
+        Self::new(dim, angles, nodes)
+    }
+
+    pub fn from_row_iterator<I, J>(n: usize, angles: I, vertices: J) -> Self
+    where
+        I: IntoIterator<Item = T>,
+        J: IntoIterator<Item = T>,
+        T: Scalar,
+    {
         Self {
             dim: n,
-            pointset: vertices,
+            angles: DMatrix::from_row_iterator(n + 1, n, angles),
+            nodes: DMatrix::from_row_iterator(n + 1, n, vertices),
         }
     }
 
-    pub fn from_row_iterator<I>(n: usize, vertices: I) -> Self
-    where
-        I: IntoIterator<Item = T>,
-        T: Scalar,
-    {
-        let points = DMatrix::from_row_iterator(n + 1, n, vertices);
-        Self::new(n, points)
+    pub fn get_vertex(&self, i: usize) -> RowView<'_, T> {
+        self.nodes.row(i)
     }
 
-    pub fn get_vertex(&self, i: usize) -> RowView<'_, T> {
-        self.pointset.row(i)
+    pub fn complex_hull(&self, angles: DMatrix<T>) -> crate::Result<T>
+    where
+        T: Scalar + num::Num + num::traits::NumAssign + core::iter::Sum + core::fmt::Debug,
+    {
+        if angles.nrows() != self.dim + 1 || angles.ncols() != self.dim {
+            return Err(crate::SimplexError::IncompatibleDimension {
+                expected: (self.dim + 1) * self.dim,
+                found: angles.len(),
+            });
+        }
+        let total_angle: T = angles.iter().cloned().sum();
+        if total_angle != T::zero() {
+            return Err(crate::SimplexError::AngleError(format!(
+                "Total angle must be zero, found: {total_angle:?}"
+            )));
+        }
+        let res = angles.dot(&self.nodes);
+        Ok(res)
     }
 
     pub fn vertices(&self) -> Vec<RowView<'_, T>>
     where
         T: Scalar,
     {
-        self.pointset.row_iter().collect::<Vec<_>>()
+        self.nodes.row_iter().collect::<Vec<_>>()
     }
     /// Computes the volume of the n-simplex using the cayley-menger determinant
     ///
@@ -53,6 +92,6 @@ impl<T> Simplex<T> {
     where
         T: ComplexField<RealField = T>,
     {
-        self.pointset.determinant().abs() / T::from_usize(self.dim.factorial()).unwrap()
+        self.nodes.determinant().abs() / T::from_usize(self.dim.factorial()).unwrap()
     }
 }

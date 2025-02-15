@@ -14,13 +14,25 @@ extern crate alloc;
 extern crate nalgebra as na;
 
 #[doc(inline)]
-pub use self::{point::Point, simplex::Simplex, traits::prelude::*};
+pub use self::{algo::prelude::*, error::*, point::Point, simplex::Simplex, traits::prelude::*};
 
+pub mod error;
 pub mod point;
 pub mod simplex;
 
 #[doc(hidden)]
 pub mod state;
+
+pub mod algo {
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    pub mod barycentric;
+
+    pub(crate) mod prelude {
+        pub use super::barycentric::*;
+    }
+}
 
 pub mod traits {
     #[doc(inline)]
@@ -35,7 +47,10 @@ pub mod traits {
 }
 
 pub mod prelude {
+    pub use crate::error::*;
     pub use crate::point::*;
     pub use crate::simplex::*;
+
+    pub use crate::algo::prelude::*;
     pub use crate::traits::prelude::*;
 }
