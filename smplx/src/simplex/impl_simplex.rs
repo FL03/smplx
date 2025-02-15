@@ -2,13 +2,30 @@
     Appellation: simple <module>
     Contrib: @FL03
 */
-use super::Simplex;
+use super::*;
 use crate::Factorial;
+use na::Point;
 use nalgebra::{ComplexField, Const, DMatrix, Scalar};
 
 use nalgebra::base::{Dyn, Matrix, ViewStorage};
 
 type RowView<'a, T> = Matrix<T, Const<1>, Dyn, ViewStorage<'a, T, Const<1>, Dyn, Const<1>, Dyn>>;
+
+impl<T, const D: usize> DSimplex<T, D> where T: Scalar {
+    /// Constructs a new simplex from an (N+1) x N matrix
+    pub fn new(nodes: Vec<Point<T, D>>) -> Self {
+        assert_eq!(nodes.len(), D + 1, "Simplex must have N+1 vertices.");
+        Self { nodes }
+    }
+
+    pub fn from_iter<I>(nodes: I) -> Self
+    where
+        I: IntoIterator<Item = Point<T, D>>,
+    {
+        let nodes = nodes.into_iter().collect::<Vec<_>>();
+        Self::new(nodes)
+    }
+}
 
 impl<T> Simplex<T> {
     /// Constructs a new simplex from an (N+1) x N matrix

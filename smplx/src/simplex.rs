@@ -34,6 +34,14 @@
 
 mod impl_simplex;
 
+use nalgebra::{Point, Scalar};
+
+pub struct DSimplex<T, const D: usize> where T: Scalar {
+    nodes: Vec<Point<T, D>>
+}
+
+
+
 /// A simplex is a generalization of the notion of a triangle or tetrahedron to arbitrary
 /// dimensions.
 #[derive(Debug, Clone, Eq, PartialEq)]
