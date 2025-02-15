@@ -36,15 +36,26 @@ mod impl_simplex;
 
 use nalgebra::{Point, Scalar};
 
+pub trait RawData {
+    type Data;
+}
 
-pub struct NSimplex<T, const N: usize> where T: Scalar, [T; N + 1]: Sized {
-    nodes: [Point<T, N>; N + 1]
+impl<T: Scalar, const N: usize> RawData for [Point<T, N>; N + 1] {
+    type Data = [T; N + 1];
+}
+
+pub struct NSimplex<T, const N: usize>
+where
+    T: Scalar,
+    [T; N + 1]: Sized,
+{
+    nodes: [Point<T, N>; N + 1],
 }
 
 /// A simplex is a generalization of the notion of a triangle or tetrahedron to arbitrary
 /// dimensions.
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Simplex<T> {
+pub struct SimplexDyn<T> {
     dim: usize,
     angles: nalgebra::DMatrix<T>, // (N+1) x N matrix
     nodes: nalgebra::DMatrix<T>,  // (N+1) x N matrix
@@ -60,7 +71,7 @@ mod tests {
         let angles = vec![0f64, 0f64, 0f64, 0f64, 0f64, 0f64];
         let vertices = vec![0f64, 0f64, 0f64, 1f64, 1f64, 0f64];
 
-        let simplex = Simplex::from_row_iterator(2, angles.clone(),  vertices.clone());
+        let simplex = SimplexDyn::from_row_iterator(2, angles.clone(), vertices.clone());
 
         for (i, j) in [(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]
             .iter()
@@ -69,5 +80,20 @@ mod tests {
             println!("{i:?}: {:?}", simplex.get_vertex(i.0));
             assert_eq!(simplex.get_vertex(i.0)[i.1], *j);
         }
+    }
+
+    #[test]
+    fn test_nsimplex() {
+        use nalgebra::Point2;
+        // vertices: [0, 0], [0, 1], [1, 0]
+        let vertices = [
+            Point2::new(0f64, 0f64),
+            Point2::new(0f64, 1f64),
+            Point2::new(1f64, 0f64),
+        ];
+
+        let triangle = NSimplex::new(vertices.clone());
+
+        assert_eq!(triangle.dim(), vertices.len() - 1);
     }
 }

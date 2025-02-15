@@ -10,11 +10,7 @@ pub enum SimplexError {
     #[error("[Angle Error] {0}")]
     AngleError(String),
     #[error("[Dimension Error] {expected} != {found}")]
-    IncompatibleDimension {
-        expected: usize,
-        found: usize,
-    
-    },
+    IncompatibleDimension { expected: usize, found: usize },
     #[error("[Unknown Error] {0}")]
-    Unknown(String)
+    Unknown(String),
 }

@@ -21,8 +21,27 @@ where
         Self { nodes }
     }
 
+    pub fn try_from_iter<I>(iter: I) -> crate::Result<Self>
+    where
+        I: IntoIterator<Item = Point<T, D>>,
+    {
+        let iter = iter.into_iter();
+        let (n, _) = iter.size_hint();
+        Vec::from_iter(iter)
+            .try_into()
+            .map(|nodes| Self::new(nodes))
+            .map_err(|_| crate::SimplexError::IncompatibleDimension {
+                expected: D + 1,
+                found: n,
+            })
+    }
+
     pub const fn dim(&self) -> usize {
         D
+    }
+
+    pub fn len(&self) -> usize {
+        D + 1
     }
 
     pub const fn vertices(&self) -> &[Point<T, D>; D + 1] {
@@ -37,7 +56,7 @@ where
     }
 }
 
-impl<T> Simplex<T> {
+impl<T> SimplexDyn<T> {
     /// Constructs a new simplex from an (N+1) x N matrix
     pub fn new(dim: usize, angles: DMatrix<T>, nodes: DMatrix<T>) -> Self {
         assert_eq!(nodes.nrows(), dim + 1, "Simplex must have N+1 vertices.");
