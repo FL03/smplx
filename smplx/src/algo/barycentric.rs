@@ -4,21 +4,27 @@
 */
 
 use nalgebra::DMatrix;
-use nalgebra::{Point, Point2, RealField, Scalar, SVector, Vector3};
-
+use nalgebra::{Point, Point2, RealField, SVector, Scalar, Vector3};
 
 /// [dynbary] computes the barycentric coordinates of a point in an n-simplex.
-pub fn dynbary<T, const D: usize>(simplex: &[Point<T, D>; D + 1], point: &Point<T, D>) -> SVector<T, {D + 1}>
+pub fn dynbary<T, const D: usize>(
+    simplex: &[Point<T, D>; D + 1],
+    point: &Point<T, D>,
+) -> SVector<T, { D + 1 }>
 where
     T: Copy + RealField + Scalar,
 {
     let n = D + 1;
-    // verify the shape of the simplex 
-    assert_eq!(D + 1, simplex.len(), "A simplex contains exactly N+1 n-dimensional points.");
+    // verify the shape of the simplex
+    assert_eq!(
+        D + 1,
+        simplex.len(),
+        "A simplex contains exactly N+1 n-dimensional points."
+    );
     // initialize a matrix for the simplex points
     let mut matrix = DMatrix::zeros(n, n);
     // initialize a vector for the right-hand side
-    let mut rhs = SVector::<T, {D + 1}>::zeros();
+    let mut rhs = SVector::<T, { D + 1 }>::zeros();
     // Fill matrix with simplex points (homogeneous form)
     for i in 0..=D {
         for j in 0..D {
@@ -34,7 +40,10 @@ where
     rhs[D] = T::one(); // Homogeneous coordinate
 
     // Solve for barycentric coordinates
-    let bary_coords = matrix.lu().solve(&rhs).unwrap_or(SVector::<T, {D + 1}>::zeros());
+    let bary_coords = matrix
+        .lu()
+        .solve(&rhs)
+        .unwrap_or(SVector::<T, { D + 1 }>::zeros());
 
     bary_coords
 }

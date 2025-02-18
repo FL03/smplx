@@ -52,35 +52,10 @@ where
     nodes: [Point<T, N>; N + 1],
 }
 
-/// A simplex is a generalization of the notion of a triangle or tetrahedron to arbitrary
-/// dimensions.
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct SimplexDyn<T> {
-    dim: usize,
-    angles: nalgebra::DMatrix<T>, // (N+1) x N matrix
-    nodes: nalgebra::DMatrix<T>,  // (N+1) x N matrix
-}
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_simplex() {
-        // vertices: [0, 0], [0, 1], [1, 0]
-        let angles = vec![0f64, 0f64, 0f64, 0f64, 0f64, 0f64];
-        let vertices = vec![0f64, 0f64, 0f64, 1f64, 1f64, 0f64];
-
-        let simplex = SimplexDyn::from_row_iterator(2, angles.clone(), vertices.clone());
-
-        for (i, j) in [(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]
-            .iter()
-            .zip(vertices.iter())
-        {
-            println!("{i:?}: {:?}", simplex.get_vertex(i.0));
-            assert_eq!(simplex.get_vertex(i.0)[i.1], *j);
-        }
-    }
 
     #[test]
     fn test_nsimplex() {

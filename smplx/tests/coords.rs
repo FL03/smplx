@@ -6,7 +6,7 @@
 use smplx::algo::barycentric::*;
 
 use approx::assert_relative_eq;
-use nalgebra::{convert, Point2, Vector3};
+use nalgebra::{Point2, Vector3, convert};
 
 #[test]
 fn test_barycentric() {

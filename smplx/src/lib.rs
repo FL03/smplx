@@ -19,6 +19,8 @@ extern crate nalgebra as na;
 pub use self::{algo::prelude::*, error::*, simplex::*, traits::prelude::*};
 
 pub mod error;
+#[doc(hidden)]
+pub mod harmonics;
 pub mod simplex;
 
 pub mod algo {
