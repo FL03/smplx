@@ -131,7 +131,7 @@ mod impl_hull {
             approx::assert_abs_diff_eq!(sum_weights, T::one());
             let mut weighted_position = Point::<T, N>::origin();
             for n in 0..N {
-                for (i, &vertex) in nodes.into_iter().enumerate() {
+                for (i, &vertex) in nodes.iter().enumerate() {
                     weighted_position[n] += vertex.position[n] * weights[i];
                 }
             }
@@ -172,6 +172,7 @@ mod tests {
         let hull = HarmonicHull::new(vertices, weights).convex_hull();
         assert_eq!(exp.frequency(), hull.frequency());
         assert_eq!(exp.phase_angle(), hull.phase_angle());
+        #[cfg(feature = "approx")]
         approx::assert_abs_diff_eq!(exp.position(), hull.position());
     }
 }

@@ -40,12 +40,12 @@ where
     rhs[D] = T::one(); // Homogeneous coordinate
 
     // Solve for barycentric coordinates
-    let bary_coords = matrix
+    
+
+    matrix
         .lu()
         .solve(&rhs)
-        .unwrap_or(SVector::<T, { D + 1 }>::zeros());
-
-    bary_coords
+        .unwrap_or(SVector::<T, { D + 1 }>::zeros())
 }
 
 pub fn barycentric<T>(simplex: &[Point2<T>], point: &Point2<T>) -> Vector3<T>

@@ -67,7 +67,7 @@ mod tests {
             Point2::new(1f64, 0f64),
         ];
 
-        let triangle = NSimplex::new(vertices.clone());
+        let triangle = NSimplex::new(vertices);
 
         assert_eq!(triangle.dim(), vertices.len() - 1);
     }
