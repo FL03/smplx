@@ -46,14 +46,19 @@ impl<A> NdSimplex<A> {
     where
         A: Lapack + Scalar + ScalarOperand,
     {
-        let dim = self.nodes.ncols();
-        let npoints = self.nodes.nrows();
         // verify the shape of the simplex
         assert_eq!(
-            npoints,
-            dim + 1,
+            self.nrows(), self.ncols() + 1,
             "A simplex contains exactly N+1 n-dimensional points."
         );
+        assert_eq!(
+            point.len(),
+            self.ncols(),
+            "The point must have the same dimension as the simplex."
+        );
+        
+        let dim = self.ncols();
+        let npoints = self.nrows();
         // initialize a matrix for the simplex points
         let mut matrix = Array2::zeros((npoints, npoints));
         // initialize a vector for the right-hand side
