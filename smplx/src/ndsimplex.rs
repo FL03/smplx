@@ -17,14 +17,7 @@ pub struct NdSimplex<A = f64> {
 }
 
 impl<A> NdSimplex<A> {
-    pub fn zeros(nrows: usize, ncols: usize) -> Self
-    where
-        A: num::Zero,
-    {
-        Self {
-            nodes: Array2::zeros((nrows, ncols)),
-        }
-    }
+    /// constructs a new simplex from an (N+1) x N matrix
     pub fn from_ndarray(nodes: Array2<A>) -> Self {
         assert_eq!(
             nodes.nrows(),
@@ -33,6 +26,21 @@ impl<A> NdSimplex<A> {
         );
         Self { nodes }
     }
+    /// creates a simplex with the given dimension and all ones
+    pub fn ones(dim: usize) -> Self
+    where
+        A: num::One,
+    {
+        Self::from_ndarray(Array2::ones((dim + 1, dim)))
+    }
+    /// creates a simplex with the given dimension and all zeros
+    pub fn zeros(dim: usize) -> Self
+    where
+        A: num::Zero,
+    {
+        Self::from_ndarray(Array2::zeros((dim + 1, dim)))
+    }
+    
     /// calculate the barycentric coordinates of the given point with respect to the simplex
     pub fn barycentric(&self, point: Array1<A>) -> Array1<A>
     where
@@ -57,22 +65,34 @@ impl<A> NdSimplex<A> {
             }
             matrix[(dim, i)] = A::one(); // Homogeneous coordinate row
         }
-
         // Right-hand side vector (homogeneous point)
         for j in 0..dim {
             rhs[j] = point[j];
         }
         rhs[dim] = A::one(); // Homogeneous coordinate
-
         // Solve for barycentric coordinates
         matrix.solve(&rhs).unwrap_or(Array1::zeros(npoints))
     }
     /// returns a read-only view of the nodes
-    pub const fn view(&self) -> ArrayView2<'a, A> {
+    pub fn view(&self) -> ArrayView2<'a, A> {
         self.nodes.view()
     }
     /// returns a mutable view of the nodes
     pub fn view_mut(&mut self) -> ArrayViewMut2<'_, A> {
         self.nodes.view_mut()
+    }
+}
+
+impl<A> core::ops::Deref for NdSimplex<A> {
+    type Target = Array2<A>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.nodes
+    }
+}
+
+impl<A> core::ops::DerefMut for NdSimplex<A> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.nodes
     }
 }

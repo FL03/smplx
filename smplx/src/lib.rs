@@ -4,7 +4,7 @@
 */
 //! # smplx
 //!
-//! The `smplx` crate is a collection of algorithms and data structures for working with 
+//! The `smplx` crate is a collection of algorithms and data structures for working with
 //! simplices in n-dimensional space. The crate is designed to be flexible and generic,
 //! allowing users to work with simplices in a variety of contexts.
 #![crate_name = "smplx"]
@@ -18,28 +18,15 @@ extern crate alloc;
 extern crate nalgebra as na;
 
 #[doc(inline)]
-pub use self::{ error::*,  traits::prelude::*};
+pub use self::{error::*, traits::prelude::*};
+#[cfg(feature = "ndarray")]
+pub use ndsimplex::NdSimplex;
 
 pub mod error;
-#[doc(hidden)]
-#[cfg(feature = "nalgebra")]
-pub mod harmonics;
 #[cfg(feature = "ndarray")]
 pub mod ndsimplex;
 #[cfg(feature = "nalgebra")]
 pub mod simplex;
-
-#[cfg(feature = "nalgebra")]
-pub mod algo {
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    pub mod barycentric;
-
-    pub(crate) mod prelude {
-        pub use super::barycentric::*;
-    }
-}
 
 pub mod traits {
     #[doc(inline)]
@@ -53,10 +40,10 @@ pub mod traits {
 }
 
 pub mod prelude {
+    #[cfg(feature = "nalgebra")]
+    pub use crate::algo::prelude::*;
     pub use crate::error::*;
     #[cfg(feature = "nalgebra")]
     pub use crate::simplex::*;
-    #[cfg(feature = "nalgebra")]
-    pub use crate::algo::prelude::*;
     pub use crate::traits::prelude::*;
 }

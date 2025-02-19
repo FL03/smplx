@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 
-use smplx::algo::barycentric::*;
+use smplx::simplex::algo::barycentric::*;
 
 use approx::assert_relative_eq;
 use nalgebra::{Point2, Vector3, convert};

@@ -32,6 +32,19 @@
 //! |-|-|
 //!
 
+pub mod algo {
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    pub mod barycentric;
+    pub mod harmonics;
+
+    pub(crate) mod prelude {
+        pub use super::barycentric::*;
+        pub use super::harmonics::*;
+    }
+}
+
 mod impl_simplex;
 
 use nalgebra::{allocator::Allocator, default_allocator::DefaultAllocator};
