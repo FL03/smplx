@@ -9,51 +9,36 @@ use ndarray::{Array1, Array2, ArrayView1, Axis, Ix, NdFloat};
 #[derive(Clone, Debug)]
 pub struct QuickHull<A> {
     points: Array2<A>,
+    hull: Vec<usize>,
 }
+
 impl<A> QuickHull<A> {
     /// Constructs a new QuickHull instance from a set of points.
     pub fn new(points: Array2<A>) -> Self {
-        Self { points }
+        Self { points, hull: Vec::new() }
     }
 
     /// Computes the convex hull using the QuickHull algorithm.
-    pub fn compute(&self) -> Array2<A>
+    pub fn compute(&mut self) -> Array2<A>
     where
         A: NdFloat,
     {
-        let mut hull_indices = Vec::new();
-
         if self.points.nrows() <= 3 {
-            // If we have ≤3 points, they already form a convex hull
-            return self.points.clone();
+            return self.remove_duplicates(self.points.axis_iter(Axis(0)).map(|row| row.to_owned()).collect());
         }
 
-        // Step 1: Find extreme points along an axis (x-axis here)
         let (min_idx, max_idx) = self.find_extremes();
 
-        // Step 2: Partition points into two sets
         let (above, below) = self.partition_points(min_idx, max_idx);
 
-        // Step 3: Recursively build the convex hull
-        self.quickhull_recursive(min_idx, max_idx, &above, &mut hull_indices);
-        self.quickhull_recursive(max_idx, min_idx, &below, &mut hull_indices);
+        self.quickhull_recursive(min_idx, max_idx, &above);
+        self.quickhull_recursive(max_idx, min_idx, &below);
 
-        // Step 4: Collect unique points forming the hull
-        let hull_points = hull_indices
-            .into_iter()
-            .map(|idx| self.points.row(idx).to_owned())
-            .collect::<Vec<_>>();
-
-        let unique_hull_points = self.remove_duplicates(hull_points);
-
-        ndarray::stack(
-            Axis(0),
-            &unique_hull_points.iter().map(|x| x.view()).collect::<Vec<_>>(),
-        )
-        .expect("Failed to stack points into an array")
+        let hull_points = self.hull.iter().map(|&idx| self.points.row(idx).to_owned()).collect::<Vec<_>>();
+        self.remove_duplicates(hull_points)
     }
 
-    fn remove_duplicates(&self, points: Vec<Array1<A>>) -> Vec<Array1<A>>
+    fn remove_duplicates(&self, points: Vec<Array1<A>>) -> Array2<A>
     where
         A: NdFloat,
     {
@@ -63,25 +48,22 @@ impl<A> QuickHull<A> {
                 unique_points.push(point);
             }
         }
-        unique_points
+        ndarray::stack(
+            Axis(0),
+            &unique_points.iter().map(|x| x.view()).collect::<Vec<_>>(),
+        )
+        .expect("Failed to stack points into an array")
     }
 
-    fn quickhull_recursive(&self, a: usize, b: usize, subset: &[usize], hull: &mut Vec<usize>)
+    fn quickhull_recursive(&mut self, a: usize, b: usize, subset: &[usize])
     where
         A: NdFloat,
     {
-        // If no points remain, just record the edge from a to b
         if subset.is_empty() {
-            if !hull.contains(&a) {
-                hull.push(a);
-            }
-            if !hull.contains(&b) {
-                hull.push(b);
-            }
+            self.record_edge(a, b);
             return;
         }
 
-        // Find the farthest point from baseline (a,b) among subset
         let maybe_farthest = subset.iter().max_by(|&&p1, &&p2| {
             self.signed_distance(
                 &self.points.row(a),
@@ -96,81 +78,62 @@ impl<A> QuickHull<A> {
             .unwrap()
         });
 
-        // If we can't find a strictly "farther" point, all subset points are collinear with (a,b)
         let farthest = match maybe_farthest {
             Some(&idx) => idx,
             None => {
-                // Just keep endpoints a, b
-                if !hull.contains(&a) {
-                    hull.push(a);
-                }
-                if !hull.contains(&b) {
-                    hull.push(b);
-                }
+                self.record_edge(a, b);
                 return;
             }
         };
 
-        // Check whether the farthest point is actually collinear with (a,b)
         let cross = self.signed_distance(
             &self.points.row(a),
             &self.points.row(b),
             &self.points.row(farthest),
         );
         if cross.abs() < A::epsilon() {
-            // If collinear, just keep (a,b) in the hull
-            if !hull.contains(&a) {
-                hull.push(a);
-            }
-            if !hull.contains(&b) {
-                hull.push(b);
-            }
+            self.record_edge(a, b);
             return;
         }
 
-        // Partition only the subset on each side
         let (above_a, _) = self.partition_subset(a, farthest, subset);
         let (_, above_b) = self.partition_subset(farthest, b, subset);
 
-        // Recursively process each side
-        self.quickhull_recursive(a, farthest, &above_a, hull);
-        self.quickhull_recursive(farthest, b, &above_b, hull);
+        self.quickhull_recursive(a, farthest, &above_a);
+        self.quickhull_recursive(farthest, b, &above_b);
     }
 
-    /// Computes the signed distance of a point from a baseline (a, b).
+    fn record_edge(&mut self, a: usize, b: usize) {
+        let edge = (a.min(b), a.max(b));
+        if !self.hull.contains(&edge.0) {
+            self.hull.push(edge.0);
+        }
+        if !self.hull.contains(&edge.1) {
+            self.hull.push(edge.1);
+        }
+    }
+
     fn signed_distance(&self, a: &ArrayView1<A>, b: &ArrayView1<A>, p: &ArrayView1<A>) -> A
     where
         A: NdFloat,
     {
-        // For 2D arrays:
         let ab_x = b[0] - a[0];
         let ab_y = b[1] - a[1];
         let ap_x = p[0] - a[0];
         let ap_y = p[1] - a[1];
-        // Cross product z-component: ab_x * ap_y - ab_y * ap_x
         ab_x * ap_y - ab_y * ap_x
     }
 
-    /// Finds the indices of the extreme points along a given dimension.
     fn find_extremes(&self) -> (Ix, Ix)
     where
         A: NdFloat,
     {
         let col_x = self.points.column(0);
-        let min_idx = col_x
-            .indexed_iter()
-            .min_by(|a, b| a.1.partial_cmp(b.1).unwrap())
-            .unwrap()
-            .0;
-        let max_idx = col_x
-            .indexed_iter()
-            .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
-            .unwrap()
-            .0;
+        let min_idx = col_x.indexed_iter().min_by(|a, b| a.1.partial_cmp(b.1).unwrap()).unwrap().0;
+        let max_idx = col_x.indexed_iter().max_by(|a, b| a.1.partial_cmp(b.1).unwrap()).unwrap().0;
         (min_idx, max_idx)
     }
 
-    /// Skip points with cross_product == 0 to avoid keeping all collinear points.
     fn partition_points(&self, min_idx: Ix, max_idx: Ix) -> (Vec<usize>, Vec<usize>)
     where
         A: NdFloat,
@@ -191,7 +154,6 @@ impl<A> QuickHull<A> {
             } else if cross_product < A::zero() {
                 below.push(i);
             }
-            // If cross_product == 0, skip to avoid extra collinear points in the hull.
         }
         (above, below)
     }
