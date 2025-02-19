@@ -40,8 +40,6 @@ where
     rhs[D] = T::one(); // Homogeneous coordinate
 
     // Solve for barycentric coordinates
-    
-
     matrix
         .lu()
         .solve(&rhs)

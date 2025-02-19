@@ -34,15 +34,8 @@
 
 mod impl_simplex;
 
-use nalgebra::{Point, Scalar};
-
-pub trait RawData {
-    type Data;
-}
-
-impl<T: Scalar, const N: usize> RawData for [Point<T, N>; N + 1] {
-    type Data = [T; N + 1];
-}
+use nalgebra::{allocator::Allocator, default_allocator::DefaultAllocator};
+use nalgebra::{Point, Scalar, DimName};
 
 pub struct NSimplex<T, const N: usize>
 where
@@ -52,6 +45,29 @@ where
     nodes: [Point<T, N>; N + 1],
 }
 
+pub struct NaSimplex<T, D> where D: DimName, T: Scalar, DefaultAllocator: Allocator<D> {
+    nodes: Vec<na::OPoint<T, D>>,
+}
+
+impl<T, D> NaSimplex<T, D> where D: DimName, T: Scalar, DefaultAllocator: Allocator<D> {
+    pub fn new(nodes: Vec<na::OPoint<T, D>>) -> Self {
+        assert_eq!(nodes.len(), D::dim() + 1, "Simplex must have N+1 vertices.");
+        Self { nodes }
+    }
+
+
+    pub fn len(&self) -> usize {
+        self.nodes.len()
+    }
+
+    pub fn nodes(&self) -> &[na::OPoint<T, D>] {
+        &self.nodes
+    }
+
+    pub fn dim(&self) -> usize {
+        D::dim()
+    }
+}
 
 #[cfg(test)]
 mod tests {

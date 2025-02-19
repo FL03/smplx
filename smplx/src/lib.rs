@@ -21,6 +21,9 @@ pub use self::{algo::prelude::*, error::*, simplex::*, traits::prelude::*};
 pub mod error;
 #[doc(hidden)]
 pub mod harmonics;
+#[cfg(feature = "ndarray")]
+pub mod ndsimplex;
+#[cfg(feature = "nalgebra")]
 pub mod simplex;
 
 pub mod algo {

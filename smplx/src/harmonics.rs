@@ -7,65 +7,31 @@ use nalgebra::{Const, OVector, Point, RealField, Scalar};
 /// Struct representing a vertex in the harmonic space.
 /// Each vertex has a position (in some space), a phase angle, and an assigned frequency.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd)]
-pub struct HarmonicVertex<T = f64, const N: usize = 2>
+pub struct HarmonicNode<T = f64, const N: usize = 2>
 where
     T: RealField + Scalar,
 {
     frequency: T,          // Assigned frequency from scale
     phase: T,              // Phase angle in radians
-    position: Point<T, N>, // Position in 2D space (can generalize to n-D)
+    position: Point<T, N>, // The position within n-dimensional space
 }
 
 /// A lazy evaluator for calculating the convex hull of a set of harmonic vertices.
 pub struct HarmonicHull<T = f64, const N: usize = 2>
 where
     T: RealField + Scalar,
-    [HarmonicVertex<T, N>; N + 1]: Sized,
+    [HarmonicNode<T, N>; N + 1]: Sized,
 {
-    nodes: [HarmonicVertex<T, N>; N + 1],
+    nodes: [HarmonicNode<T, N>; N + 1],
     weights: OVector<T, Const<{ N + 1 }>>,
 }
 
-/// Computes the harmonic hull using weighted phase interpolation.
-/// The output phase is the argument of the weighted sum of unit phasors.
-fn _harmonic_hull(
-    vertices: &[HarmonicVertex<f64, 2>],
-    weights: &OVector<f64, Const<3>>,
-) -> HarmonicVertex<f64, 2> {
-    assert!(vertices.len() == weights.len());
-    let sum_weights: f64 = weights.iter().sum();
-    assert!((sum_weights - 1.0).abs() < 1e-6, "Weights must sum to 1");
-
-    // Compute the weighted sum of the positions
-    let mut weighted_position = na::Point2::new(0.0, 0.0);
-    for (i, vertex) in vertices.iter().enumerate() {
-        weighted_position[0] += weights[i] * vertex.position[0];
-        weighted_position[1] += weights[i] * vertex.position[1];
-    }
-
-    // Compute the weighted sum of phasors (complex representation of phase angles)
-    let mut phase_real = 0.0;
-    let mut phase_imag = 0.0;
-    for (i, vertex) in vertices.iter().enumerate() {
-        let angle = vertex.phase;
-        phase_real += weights[i] * angle.cos();
-        phase_imag += weights[i] * angle.sin();
-    }
-    let interpolated_phase = phase_imag.atan2(phase_real); // Phase interpolation
-
-    // Return the harmonic hull point
-    HarmonicVertex {
-        position: weighted_position,
-        phase: interpolated_phase,
-        frequency: vertices[0].frequency, // Assuming same scale frequency for all
-    }
-}
 
 mod impl_vertex {
-    use super::HarmonicVertex;
+    use super::HarmonicNode;
     use nalgebra::{Const, OPoint, Point, RealField, Scalar};
 
-    impl<T, const N: usize> HarmonicVertex<T, N>
+    impl<T, const N: usize> HarmonicNode<T, N>
     where
         T: RealField + Scalar,
     {
@@ -90,7 +56,7 @@ mod impl_vertex {
         }
     }
 
-    impl<T, const N: usize> core::fmt::Display for HarmonicVertex<T, N>
+    impl<T, const N: usize> core::fmt::Display for HarmonicNode<T, N>
     where
         T: core::fmt::Display + RealField + Scalar,
     {
@@ -106,7 +72,7 @@ mod impl_vertex {
 }
 
 mod impl_hull {
-    use super::{HarmonicHull, HarmonicVertex};
+    use super::{HarmonicHull, HarmonicNode};
     use nalgebra::{Const, OVector, Point, RealField, Scalar};
     
     impl<T, const N: usize> HarmonicHull<T, N>
@@ -115,13 +81,13 @@ mod impl_hull {
         [T; N + 1]: Sized,
     {
         pub fn new(
-            nodes: [HarmonicVertex<T, N>; N + 1],
+            nodes: [HarmonicNode<T, N>; N + 1],
             weights: OVector<T, Const<{ N + 1 }>>,
         ) -> Self {
             Self { nodes, weights }
         }
 
-        pub fn convex_hull(&self) -> HarmonicVertex<T, N>
+        pub fn convex_hull(&self) -> HarmonicNode<T, N>
         where
             T: Copy + core::iter::Sum,
         {
@@ -145,7 +111,7 @@ mod impl_hull {
             }
             let interpolated_phase = phase_imag.atan2(phase_real);
 
-            HarmonicVertex::new(
+            HarmonicNode::new(
                 nodes[0].frequency, // Assuming same scale frequency for all
                 interpolated_phase,
                 weighted_position,
@@ -160,12 +126,48 @@ mod tests {
     use super::*;
     use nalgebra::{Point2, Vector3};
 
+    
+    /// Computes the harmonic hull using weighted phase interpolation.
+    /// The output phase is the argument of the weighted sum of unit phasors.
+    fn _harmonic_hull(
+        vertices: &[HarmonicNode<f64, 2>],
+        weights: &OVector<f64, Const<3>>,
+    ) -> HarmonicNode<f64, 2> {
+        assert!(vertices.len() == weights.len());
+        let sum_weights: f64 = weights.iter().sum();
+        assert!((sum_weights - 1.0).abs() < 1e-6, "Weights must sum to 1");
+
+        // Compute the weighted sum of the positions
+        let mut weighted_position = na::Point2::new(0.0, 0.0);
+        for (i, vertex) in vertices.iter().enumerate() {
+            weighted_position[0] += weights[i] * vertex.position[0];
+            weighted_position[1] += weights[i] * vertex.position[1];
+        }
+
+        // Compute the weighted sum of phasors (complex representation of phase angles)
+        let mut phase_real = 0.0;
+        let mut phase_imag = 0.0;
+        for (i, vertex) in vertices.iter().enumerate() {
+            let angle = vertex.phase;
+            phase_real += weights[i] * angle.cos();
+            phase_imag += weights[i] * angle.sin();
+        }
+        let interpolated_phase = phase_imag.atan2(phase_real); // Phase interpolation
+
+        // Return the harmonic hull point
+        HarmonicNode {
+            position: weighted_position,
+            phase: interpolated_phase,
+            frequency: vertices[0].frequency, // Assuming same scale frequency for all
+        }
+    }
+
     #[test]
     fn test_harmonic_hull() {
         let vertices = [
-            HarmonicVertex::new(1.0, 0.0, Point2::new(0.0, 0.0)),
-            HarmonicVertex::new(1.0, std::f64::consts::FRAC_PI_2, Point2::new(1.0, 0.0)),
-            HarmonicVertex::new(1.0, std::f64::consts::PI, Point2::new(1.0, 1.0)),
+            HarmonicNode::new(1.0, 0.0, Point2::new(0.0, 0.0)),
+            HarmonicNode::new(1.0, std::f64::consts::FRAC_PI_2, Point2::new(1.0, 0.0)),
+            HarmonicNode::new(1.0, std::f64::consts::PI, Point2::new(1.0, 1.0)),
         ];
         let weights = Vector3::new(0.2, 0.5, 0.3);
         let exp = _harmonic_hull(&vertices, &weights);
