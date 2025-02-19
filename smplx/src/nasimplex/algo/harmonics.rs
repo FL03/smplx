@@ -26,7 +26,6 @@ where
     weights: OVector<T, Const<{ N + 1 }>>,
 }
 
-
 mod impl_vertex {
     use super::HarmonicNode;
     use nalgebra::{Const, OPoint, Point, RealField, Scalar};
@@ -74,7 +73,7 @@ mod impl_vertex {
 mod impl_hull {
     use super::{HarmonicHull, HarmonicNode};
     use nalgebra::{Const, OVector, Point, RealField, Scalar};
-    
+
     impl<T, const N: usize> HarmonicHull<T, N>
     where
         T: RealField + Scalar,
@@ -118,7 +117,6 @@ mod impl_hull {
             )
         }
     }
-
 }
 
 #[cfg(test)]
@@ -126,7 +124,6 @@ mod tests {
     use super::*;
     use nalgebra::{Point2, Vector3};
 
-    
     /// Computes the harmonic hull using weighted phase interpolation.
     /// The output phase is the argument of the weighted sum of unit phasors.
     fn _harmonic_hull(

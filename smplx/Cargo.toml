@@ -14,7 +14,7 @@ repository.workspace = true
 version.workspace = true
 
 [features]
-default = [ "std", "nalgebra" ]
+default = [ "std" ]
 
 full = [
     "approx",
@@ -24,46 +24,23 @@ full = [
 
 # ********* [FF] Dependencies *********
 alloc = [
-    "nalgebra?/alloc",
     "num/alloc",
     "serde?/alloc",
 ]
 
 approx = [
     "dep:approx",
-    "ndarray?/approx",
+    "ndarray/approx",
 ]
 
 blas = [
-    "ndarray-linalg?/blas",
-    "ndarray?/blas",
-]
-
-intel-mkl = [
-    "blas",
-    "ndarray-linalg?/intel-mkl",
-]
-intel-mkl-static = [
-    "blas",
-    "ndarray-linalg?/intel-mkl-static",
-]
-
-intel-mkl-system = [
-    "blas",
-    "ndarray-linalg?/intel-mkl-system",
-]
-
-
-nalgebra = [ "dep:nalgebra", "nalgebra/macros" ]
-ndarray = [
-    "dep:ndarray",
-    "dep:ndarray-linalg",
+    "ndarray/blas",
+    "ndarray-linalg/blas",
 ]
 
 serde = [
     "dep:serde",
-    "nalgebra?/serde",
-    "ndarray?/serde",
+    "ndarray/serde",
     "serde?/derive",
 ]
 
@@ -71,27 +48,55 @@ serde = [
 std = [
     "alloc",
     "approx?/std",
-    "nalgebra?/std",
-    "ndarray?/std",
+    "ndarray/std",
     "num/std",
     "serde?/std",
 ]
 
-[[test]]
-name = "algo"
-required-features = [
-    "approx",
-    "nalgebra",
-    "std",
+# ********* [FF] blas *********
+intel-mkl = [
+    "blas",
+    "ndarray-linalg/intel-mkl",
 ]
 
-[[test]]
-name = "ndsimplex"
-required-features = [
-    "approx",
+intel-mkl-static = [
     "blas",
-    "ndarray",
-    "std",
+    "ndarray-linalg/intel-mkl-static",
+]
+
+intel-mkl-system = [
+    "blas",
+    "ndarray-linalg/intel-mkl-system",
+]
+
+openblas = [
+    "blas",
+    "ndarray-linalg/openblas",
+]
+
+openblas-system = [
+    "blas",
+    "ndarray-linalg/openblas-system",
+]
+
+openblas-static = [
+    "blas",
+    "ndarray-linalg/openblas-static",
+]
+
+netlib = [
+    "blas",
+    "ndarray-linalg/netlib",
+]
+
+netlib-static = [
+    "blas",
+    "ndarray-linalg/netlib-static",
+]
+
+netlib-system = [
+    "blas",
+    "ndarray-linalg/netlib-system",
 ]
 
 [lib]
@@ -103,11 +108,18 @@ crate-type = [
 doctest = false
 test = true
 
+[[test]]
+name = "simplex"
+required-features = [
+    "approx",
+    "blas",
+    "std",
+]
+
 [dependencies]
 approx = { default-features = false, optional = true, version = "0.5" }
-nalgebra = { default-features = false, optional = true, version = "0.33" }
-ndarray = { default-features = false, optional = true, version = "0.16" }
-ndarray-linalg = { default-features = false, optional = true, version = "0.17" }
+ndarray = { default-features = false, version = "0.16" }
+ndarray-linalg = { default-features = false, version = "0.17" }
 num = { default-features = false, version = "0.4" }
 serde = { default-features = false, optional = true, version = "1" }
 strum = { default-features = false, features = [

@@ -3,6 +3,7 @@
     Contrib: @FL03
 */
 use super::NSimplex;
+use crate::simplex::algo::barycentric::dynbary;
 use nalgebra::{Point, Scalar};
 
 impl<T, const N: usize> NSimplex<T, N>
@@ -47,6 +48,6 @@ where
     where
         T: Copy + na::RealField,
     {
-        crate::algo::dynbary(self.vertices(), &point)
+        dynbary(self.vertices(), &point)
     }
 }

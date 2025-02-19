@@ -9,24 +9,17 @@
 //! allowing users to work with simplices in a variety of contexts.
 #![crate_name = "smplx"]
 #![crate_type = "lib"]
-#![allow(incomplete_features)]
-#![feature(generic_const_exprs)]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
-#[cfg(feature = "nalgebra")]
-extern crate nalgebra as na;
 
 #[doc(inline)]
-pub use self::{error::*, traits::prelude::*};
-#[cfg(feature = "ndarray")]
-pub use ndsimplex::NdSimplex;
+pub use self::{error::*, ndsimplex::NdSimplex, traits::prelude::*};
 
+pub mod algo;
 pub mod error;
-#[cfg(feature = "ndarray")]
 pub mod ndsimplex;
-#[cfg(feature = "nalgebra")]
-pub mod simplex;
+// pub mod simplex;
 
 pub mod traits {
     #[doc(inline)]
@@ -40,10 +33,8 @@ pub mod traits {
 }
 
 pub mod prelude {
-    #[cfg(feature = "nalgebra")]
     pub use crate::algo::prelude::*;
     pub use crate::error::*;
-    #[cfg(feature = "nalgebra")]
-    pub use crate::simplex::*;
+    pub use crate::ndsimplex::NdSimplex;
     pub use crate::traits::prelude::*;
 }

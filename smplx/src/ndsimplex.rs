@@ -29,18 +29,18 @@ impl<A> NdSimplex<A> {
     /// creates a simplex with the given dimension and all ones
     pub fn ones(dim: usize) -> Self
     where
-        A: num::One,
+        A: Clone + num::One,
     {
         Self::from_ndarray(Array2::ones((dim + 1, dim)))
     }
     /// creates a simplex with the given dimension and all zeros
     pub fn zeros(dim: usize) -> Self
     where
-        A: num::Zero,
+        A: Clone + num::Zero,
     {
         Self::from_ndarray(Array2::zeros((dim + 1, dim)))
     }
-    
+
     /// calculate the barycentric coordinates of the given point with respect to the simplex
     pub fn barycentric(&self, point: Array1<A>) -> Array1<A>
     where
@@ -74,7 +74,7 @@ impl<A> NdSimplex<A> {
         matrix.solve(&rhs).unwrap_or(Array1::zeros(npoints))
     }
     /// returns a read-only view of the nodes
-    pub fn view(&self) -> ArrayView2<'a, A> {
+    pub fn view(&self) -> ArrayView2<'_, A> {
         self.nodes.view()
     }
     /// returns a mutable view of the nodes

@@ -4,7 +4,7 @@
 */
 use approx::assert_relative_eq;
 use smplx::ndsimplex::NdSimplex;
-    
+
 #[test]
 fn test_barycentric_coordinates() {
     use ndarray::array;

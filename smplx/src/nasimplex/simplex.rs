@@ -32,23 +32,9 @@
 //! |-|-|
 //!
 
-pub mod algo {
-    #[doc(inline)]
-    pub use self::prelude::*;
-
-    pub mod barycentric;
-    pub mod harmonics;
-
-    pub(crate) mod prelude {
-        pub use super::barycentric::*;
-        pub use super::harmonics::*;
-    }
-}
-
-mod impl_simplex;
-
+use nalgebra::{DMatrix, DVector, OPoint, OVector, RealField};
+use nalgebra::{DimName, Point, Scalar};
 use nalgebra::{allocator::Allocator, default_allocator::DefaultAllocator};
-use nalgebra::{Point, Scalar, DimName};
 
 pub struct NSimplex<T, const N: usize>
 where
@@ -58,16 +44,63 @@ where
     nodes: [Point<T, N>; N + 1],
 }
 
-pub struct NaSimplex<T, D> where D: DimName, T: Scalar, DefaultAllocator: Allocator<D> {
-    nodes: Vec<na::OPoint<T, D>>,
+pub struct NaSimplex<T, D>
+where
+    D: DimName,
+    T: Scalar,
+    DefaultAllocator: Allocator<D>,
+{
+    nodes: Vec<OPoint<T, D>>,
 }
 
-impl<T, D> NaSimplex<T, D> where D: DimName, T: Scalar, DefaultAllocator: Allocator<D> {
-    pub fn new(nodes: Vec<na::OPoint<T, D>>) -> Self {
+impl<T, D> NaSimplex<T, D>
+where
+    D: DimName,
+    T: Scalar,
+    DefaultAllocator: Allocator<D>,
+{
+    pub fn new(nodes: Vec<OPoint<T, D>>) -> Self {
         assert_eq!(nodes.len(), D::dim() + 1, "Simplex must have N+1 vertices.");
         Self { nodes }
     }
 
+    pub fn barycentric(&self, point: OPoint<T, D>) -> DVector<T>
+    where
+        T: Copy + RealField,
+    {
+        let dim = D::dim();
+        let n = D::dim() + 1;
+        // verify the shape of the simplex
+        assert_eq!(
+            n,
+            self.len(),
+            "A simplex contains exactly N+1 n-dimensional points."
+        );
+        // initialize a matrix for the simplex points
+        let mut matrix = DMatrix::zeros(n, n);
+        // initialize a vector for the right-hand side
+        let mut rhs = OVector::<T, na::Const<{ D::USIZE + 1 }>>::zeros();
+        // Fill matrix with simplex points (homogeneous form)
+        for i in 0..=dim {
+            for j in 0..dim {
+                matrix[(j, i)] = self.nodes[i][j];
+            }
+            matrix[(dim, i)] = T::one(); // Homogeneous coordinate row
+        }
+
+        // Right-hand side vector (homogeneous point)
+        for j in 0..dim {
+            rhs[j] = point[j];
+        }
+        rhs[dim] = T::one(); // Homogeneous coordinate
+
+        // Solve for barycentric coordinates
+        let res = matrix
+            .lu()
+            .solve(&rhs)
+            .unwrap_or_else(|| panic!("Failed to solve for barycentric coordinates."));
+        na::convert(res)
+    }
 
     pub fn len(&self) -> usize {
         self.nodes.len()
