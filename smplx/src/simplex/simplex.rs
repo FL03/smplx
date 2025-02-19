@@ -32,6 +32,7 @@
 //! |-|-|
 //!
 
+use na::Const;
 use nalgebra::{DMatrix, DVector, OPoint, OVector, RealField};
 use nalgebra::{DimName, Point, Scalar};
 use nalgebra::{allocator::Allocator, default_allocator::DefaultAllocator};
@@ -41,19 +42,19 @@ where
     T: Scalar,
     [T; N + 1]: Sized,
 {
-    nodes: [Point<T, N>; N + 1],
+    pub(crate) nodes: [Point<T, N>; N + 1],
 }
 
-pub struct NaSimplex<T, D>
+pub struct Simplex<T, D>
 where
     D: DimName,
     T: Scalar,
     DefaultAllocator: Allocator<D>,
 {
-    nodes: Vec<OPoint<T, D>>,
+    pub(crate) nodes: Vec<OPoint<T, D>>,
 }
 
-impl<T, D> NaSimplex<T, D>
+impl<T, D> Simplex<T, D>
 where
     D: DimName,
     T: Scalar,
@@ -67,6 +68,8 @@ where
     pub fn barycentric(&self, point: OPoint<T, D>) -> DVector<T>
     where
         T: Copy + RealField,
+        D: na::DimAdd<na::U1>,
+        [(); D::USIZE + 1]: Sized,
     {
         let dim = D::dim();
         let n = D::dim() + 1;
@@ -79,7 +82,7 @@ where
         // initialize a matrix for the simplex points
         let mut matrix = DMatrix::zeros(n, n);
         // initialize a vector for the right-hand side
-        let mut rhs = OVector::<T, na::Const<{ D::USIZE + 1 }>>::zeros();
+        let mut rhs = OVector::<T, Const<{D::USIZE + 1}>>::zeros();
         // Fill matrix with simplex points (homogeneous form)
         for i in 0..=dim {
             for j in 0..dim {
@@ -97,9 +100,8 @@ where
         // Solve for barycentric coordinates
         let res = matrix
             .lu()
-            .solve(&rhs)
-            .unwrap_or_else(|| panic!("Failed to solve for barycentric coordinates."));
-        na::convert(res)
+            .solve(&rhs).unwrap_or(na::SVector::<T, { D::USIZE + 1 }>::zeros());
+
     }
 
     pub fn len(&self) -> usize {

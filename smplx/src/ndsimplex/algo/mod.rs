@@ -8,7 +8,12 @@
 pub use self::prelude::*;
 
 // pub mod harmonic;
+// #[cfg(feature = "rayon")]
+pub mod quick_hull;
 
+#[allow(unused_imports)]
 pub(crate) mod prelude {
     // pub use super::harmonic::*;
+    // #[cfg(feature = "rayon")]
+    pub use super::quick_hull::*;
 }

@@ -1,20 +1,10 @@
 /*
-    Appellation: ndsimplex <module>
+    Appellation: impl_ndsimplex <module>
     Contrib: @FL03
 */
-
-use ndarray::{Array1, Array2, ArrayView2, ArrayViewMut2, ScalarOperand};
+use crate::ndsimplex::{algo, NdSimplex};
+use ndarray::{Array1, Array2, ArrayView2, ArrayViewMut2, NdFloat};
 use ndarray_linalg::{Lapack, Scalar, Solve};
-
-/// The `NdSimplex` struct represents an n-dimensional simplex constructed using the ndarray
-/// crate. The vertices, or nodes, of the simplex are stored in a 2-dimensional array where
-/// each row represents an individual vertex and each column represents a dimension. Each
-/// simplex contains N + 1 n-dimensional points, where N is the dimensionality of the simplex.
-#[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct NdSimplex<A = f64> {
-    nodes: Array2<A>,
-}
 
 impl<A> NdSimplex<A> {
     /// constructs a new simplex from an (N+1) x N matrix
@@ -44,21 +34,15 @@ impl<A> NdSimplex<A> {
     /// calculate the barycentric coordinates of the given point with respect to the simplex
     pub fn barycentric(&self, point: Array1<A>) -> Array1<A>
     where
-        A: Lapack + Scalar + ScalarOperand,
+        A: Lapack + Scalar + NdFloat,
     {
-        // verify the shape of the simplex
-        assert_eq!(
-            self.nrows(), self.ncols() + 1,
-            "A simplex contains exactly N+1 n-dimensional points."
-        );
+        let dim: usize = self.nodes.ncols();
+        let npoints: usize = self.nodes.nrows();
         assert_eq!(
             point.len(),
-            self.ncols(),
+            dim,
             "The point must have the same dimension as the simplex."
         );
-        
-        let dim = self.ncols();
-        let npoints = self.nrows();
         // initialize a matrix for the simplex points
         let mut matrix = Array2::zeros((npoints, npoints));
         // initialize a vector for the right-hand side
@@ -85,6 +69,14 @@ impl<A> NdSimplex<A> {
     /// returns a mutable view of the nodes
     pub fn view_mut(&mut self) -> ArrayViewMut2<'_, A> {
         self.nodes.view_mut()
+    }
+    /// a lazy evaluator for computing the convex hull of the simplex using the QuickHull
+    /// algorithm
+    pub fn quickhull(&self) -> algo::QuickHull<A>
+    where
+        A: NdFloat,
+    {
+        algo::QuickHull::new(self.nodes.clone())
     }
 }
 
