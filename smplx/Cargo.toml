@@ -24,22 +24,37 @@ full = [
 
 # ********* [FF] Dependencies *********
 alloc = [
-    "nalgebra/alloc",
+    "nalgebra?/alloc",
     "num/alloc",
     "serde?/alloc",
 ]
 
 approx = [
     "dep:approx",
-    "ndarray/approx",
+    "ndarray?/approx",
 ]
 
 blas = [
-    "ndarray-linalg/blas",
-    "ndarray/blas",
+    "ndarray-linalg?/blas",
+    "ndarray?/blas",
 ]
 
-nalgebra = [ "dep:nalgebra" ]
+intel-mkl = [
+    "blas",
+    "ndarray-linalg?/intel-mkl",
+]
+intel-mkl-static = [
+    "blas",
+    "ndarray-linalg?/intel-mkl-static",
+]
+
+intel-mkl-system = [
+    "blas",
+    "ndarray-linalg?/intel-mkl-system",
+]
+
+
+nalgebra = [ "dep:nalgebra", "nalgebra/macros" ]
 ndarray = [
     "dep:ndarray",
     "dep:ndarray-linalg",
@@ -48,7 +63,7 @@ ndarray = [
 serde = [
     "dep:serde",
     "nalgebra?/serde",
-    "ndarray/serde",
+    "ndarray?/serde",
     "serde?/derive",
 ]
 

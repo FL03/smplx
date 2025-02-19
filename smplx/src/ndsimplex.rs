@@ -3,27 +3,43 @@
     Contrib: @FL03
 */
 
-use ndarray::{Array1, Array2, ScalarOperand};
+use ndarray::{Array1, Array2, ArrayView2, ArrayViewMut2, ScalarOperand};
 use ndarray_linalg::{Lapack, Scalar, Solve};
 
-/// The `NdSimplex` struct represents an n-dimensional simplex constructed using the ndarray 
-/// crate. The vertices of the simplex are stored in a 2D array, where each row represents a
-/// vertex and each column represents a dimension.
+/// The `NdSimplex` struct represents an n-dimensional simplex constructed using the ndarray
+/// crate. The vertices, or nodes, of the simplex are stored in a 2-dimensional array where
+/// each row represents an individual vertex and each column represents a dimension. Each
+/// simplex contains N + 1 n-dimensional points, where N is the dimensionality of the simplex.
 #[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct NdSimplex<A> {
-    vertices: Array2<A>,
+pub struct NdSimplex<A = f64> {
+    nodes: Array2<A>,
 }
 
 impl<A> NdSimplex<A> {
-    pub fn from_ndarray(vertices: Array2<A>) -> Self {
-        assert_eq!(vertices.nrows(), vertices.ncols() + 1, "Simplex must have N+1 vertices.");
-        Self { vertices }
+    pub fn zeros(nrows: usize, ncols: usize) -> Self
+    where
+        A: num::Zero,
+    {
+        Self {
+            nodes: Array2::zeros((nrows, ncols)),
+        }
     }
-
-    pub fn barycentric(&self, point: Array1<A>) -> Array1<A> where A: Lapack + Scalar + ScalarOperand + num::Num {
-        let dim = self.vertices.ncols();
-        let npoints = self.vertices.nrows();
+    pub fn from_ndarray(nodes: Array2<A>) -> Self {
+        assert_eq!(
+            nodes.nrows(),
+            nodes.ncols() + 1,
+            "Simplex must have N+1 vertices."
+        );
+        Self { nodes }
+    }
+    /// calculate the barycentric coordinates of the given point with respect to the simplex
+    pub fn barycentric(&self, point: Array1<A>) -> Array1<A>
+    where
+        A: Lapack + Scalar + ScalarOperand,
+    {
+        let dim = self.nodes.ncols();
+        let npoints = self.nodes.nrows();
         // verify the shape of the simplex
         assert_eq!(
             npoints,
@@ -37,7 +53,7 @@ impl<A> NdSimplex<A> {
         // Fill matrix with simplex points (homogeneous form)
         for i in 0..=dim {
             for j in 0..dim {
-                matrix[(j, i)] = self.vertices[[i, j]];
+                matrix[(j, i)] = self.nodes[[i, j]];
             }
             matrix[(dim, i)] = A::one(); // Homogeneous coordinate row
         }
@@ -49,13 +65,14 @@ impl<A> NdSimplex<A> {
         rhs[dim] = A::one(); // Homogeneous coordinate
 
         // Solve for barycentric coordinates
-        matrix
-            .solve(&rhs)
-            .unwrap_or(Array1::zeros(npoints))
+        matrix.solve(&rhs).unwrap_or(Array1::zeros(npoints))
     }
-
-    pub const fn vertices(&self) -> &Array2<A> {
-        &self.vertices
+    /// returns a read-only view of the nodes
+    pub const fn view(&self) -> ArrayView2<'a, A> {
+        self.nodes.view()
+    }
+    /// returns a mutable view of the nodes
+    pub fn view_mut(&mut self) -> ArrayViewMut2<'_, A> {
+        self.nodes.view_mut()
     }
 }
-

@@ -1,10 +1,12 @@
 /*
-    Appellation: rstopo <module>
+    Appellation: smplx <lib>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # smplx
 //!
-//! smplx is a research project supporting the Flow protocol
+//! The `smplx` crate is a collection of algorithms and data structures for working with 
+//! simplices in n-dimensional space. The crate is designed to be flexible and generic,
+//! allowing users to work with simplices in a variety of contexts.
 #![crate_name = "smplx"]
 #![crate_type = "lib"]
 #![allow(incomplete_features)]
@@ -12,20 +14,22 @@
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
-
+#[cfg(feature = "nalgebra")]
 extern crate nalgebra as na;
 
 #[doc(inline)]
-pub use self::{algo::prelude::*, error::*, simplex::*, traits::prelude::*};
+pub use self::{ error::*,  traits::prelude::*};
 
 pub mod error;
 #[doc(hidden)]
+#[cfg(feature = "nalgebra")]
 pub mod harmonics;
 #[cfg(feature = "ndarray")]
 pub mod ndsimplex;
 #[cfg(feature = "nalgebra")]
 pub mod simplex;
 
+#[cfg(feature = "nalgebra")]
 pub mod algo {
     #[doc(inline)]
     pub use self::prelude::*;
@@ -50,8 +54,9 @@ pub mod traits {
 
 pub mod prelude {
     pub use crate::error::*;
+    #[cfg(feature = "nalgebra")]
     pub use crate::simplex::*;
-
+    #[cfg(feature = "nalgebra")]
     pub use crate::algo::prelude::*;
     pub use crate::traits::prelude::*;
 }
