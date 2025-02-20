@@ -24,8 +24,8 @@ full = [
 
 # ********* [FF] Dependencies *********
 alloc = [
-    "num/alloc",
     "nalgebra?/alloc",
+    "num/alloc",
     "serde?/alloc",
 ]
 
@@ -35,13 +35,11 @@ approx = [
 ]
 
 blas = [
-    "ndarray?/blas",
     "ndarray-linalg?/blas",
+    "ndarray?/blas",
 ]
 
-nalgebra = [
-    "dep:nalgebra",
-]
+nalgebra = [ "dep:nalgebra" ]
 
 ndarray = [
     "dep:ndarray",
@@ -63,7 +61,8 @@ serde = [
 # ********* [FF] Environments *********
 std = [
     "alloc",
-    "approx?/std","nalgebra?/std",
+    "approx?/std",
+    "nalgebra?/std",
 
     "ndarray?/std",
     "num/std",
@@ -127,14 +126,19 @@ test = true
 
 [[test]]
 name = "quick_hull"
-required-features = ["approx", "ndarray", "std"]
+required-features = [
+    "approx",
+    "default",
+    "ndarray",
+]
+
 [[test]]
 name = "ndsimplex"
 required-features = [
     "approx",
     "blas",
+    "default",
     "ndarray",
-    "std",
 ]
 
 [dependencies]

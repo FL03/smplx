@@ -32,7 +32,7 @@
 //! |-|-|
 //!
 
-use na::Const;
+use na::{Const, SVector, U1};
 use nalgebra::{DMatrix, DVector, OPoint, OVector, RealField};
 use nalgebra::{DimName, Point, Scalar};
 use nalgebra::{allocator::Allocator, default_allocator::DefaultAllocator};
@@ -45,75 +45,38 @@ where
     pub(crate) nodes: [Point<T, N>; N + 1],
 }
 
-pub struct Simplex<T, D>
-where
-    D: DimName,
-    T: Scalar,
-    DefaultAllocator: Allocator<D>,
-{
-    pub(crate) nodes: Vec<OPoint<T, D>>,
+pub struct DynSimplex<T> {
+    pub(crate) dim: usize,
+    pub(crate) nodes: DMatrix<T>,
 }
 
-impl<T, D> Simplex<T, D>
-where
-    D: DimName,
-    T: Scalar,
-    DefaultAllocator: Allocator<D>,
-{
-    pub fn new(nodes: Vec<OPoint<T, D>>) -> Self {
-        assert_eq!(nodes.len(), D::dim() + 1, "Simplex must have N+1 vertices.");
-        Self { nodes }
-    }
-
-    pub fn barycentric(&self, point: OPoint<T, D>) -> DVector<T>
-    where
-        T: Copy + RealField,
-        D: na::DimAdd<na::U1>,
-        [(); D::USIZE + 1]: Sized,
-    {
-        let dim = D::dim();
-        let n = D::dim() + 1;
-        // verify the shape of the simplex
-        assert_eq!(
-            n,
-            self.len(),
-            "A simplex contains exactly N+1 n-dimensional points."
-        );
-        // initialize a matrix for the simplex points
-        let mut matrix = DMatrix::zeros(n, n);
-        // initialize a vector for the right-hand side
-        let mut rhs = OVector::<T, Const<{D::USIZE + 1}>>::zeros();
-        // Fill matrix with simplex points (homogeneous form)
-        for i in 0..=dim {
-            for j in 0..dim {
-                matrix[(j, i)] = self.nodes[i][j];
-            }
-            matrix[(dim, i)] = T::one(); // Homogeneous coordinate row
-        }
-
-        // Right-hand side vector (homogeneous point)
-        for j in 0..dim {
-            rhs[j] = point[j];
-        }
-        rhs[dim] = T::one(); // Homogeneous coordinate
-
-        // Solve for barycentric coordinates
-        let res = matrix
-            .lu()
-            .solve(&rhs).unwrap_or(na::SVector::<T, { D::USIZE + 1 }>::zeros());
-
+impl<T> DynSimplex<T> {
+    pub fn new(dim: usize,) -> Self where T: Scalar + num::Zero {
+        let nodes = DMatrix::zeros(dim + 1, dim);
+        Self { dim, nodes }
     }
 
     pub fn len(&self) -> usize {
         self.nodes.len()
     }
 
-    pub fn nodes(&self) -> &[na::OPoint<T, D>] {
+    pub fn nodes(&self) -> &DMatrix<T> {
         &self.nodes
     }
 
     pub fn dim(&self) -> usize {
-        D::dim()
+        self.dim
+    }
+}
+
+impl<T> core::ops::Deref for DynSimplex<T>
+where
+    T: Scalar,
+{
+    type Target = DMatrix<T>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.nodes
     }
 }
 
@@ -122,7 +85,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_nsimplex() {
+    fn test_na_simplex() {
         use nalgebra::Point2;
         // vertices: [0, 0], [0, 1], [1, 0]
         let vertices = [
@@ -134,5 +97,22 @@ mod tests {
         let triangle = NSimplex::new(vertices);
 
         assert_eq!(triangle.dim(), vertices.len() - 1);
+    }
+
+    #[test]
+    fn test_dyn_simplex() {
+        use nalgebra::{DMatrix, Point2};
+        // vertices: [0, 0], [0, 1], [1, 0]
+        let vertices = [
+            Point2::new(0f64, 0f64),
+            Point2::new(0f64, 1f64),
+            Point2::new(1f64, 0f64),
+        ];
+
+        // let vertices = DMatrix::from_iterator(3, 2, vertices.iter().cloned());
+
+        let simplex = DynSimplex::<f64>::new(2);
+
+        assert_eq!(simplex.dim(), 2);
     }
 }
