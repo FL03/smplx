@@ -8,7 +8,7 @@ use nalgebra::{Const, DimName, OPoint, Point, Point2, RealField, SVector, Scalar
 
 pub fn bary<T, D>(
     simplex: &DMatrix<T>,
-    point: &Point<T, {D::USIZE}>,
+    point: &OPoint<T, Const<{D::USIZE}>>,
 ) -> SVector<T, { D::USIZE + 1 }>
 where
     D: DimName,

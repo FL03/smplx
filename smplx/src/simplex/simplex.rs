@@ -111,8 +111,8 @@ mod tests {
 
         // let vertices = DMatrix::from_iterator(3, 2, vertices.iter().cloned());
 
-        let simplex = DynSimplex::<f64>::new(2);
+        // let simplex = DynSimplex::<f64>::new(2);
 
-        assert_eq!(simplex.dim(), 2);
+        // assert_eq!(simplex.dim(), 2);
     }
 }

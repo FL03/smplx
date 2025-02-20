@@ -48,7 +48,7 @@ mod tests {
     }
 
      #[test]
-    fn test_dyn_simplex() {
+    fn test_barycentric() {
         use nalgebra::{DMatrix, Point2};
         // vertices: [0, 0], [0, 1], [1, 0]
         let vertices = [
@@ -57,9 +57,9 @@ mod tests {
             Point2::new(1f64, 0f64),
         ];
 
-        let simplex = DMatrix::from_iterator(3, 2, vertices.iter().cloned());
+        // let simplex = DMatrix::from_iterator(3, 2, vertices.iter().cloned());
 
-        let position = Point2::new(0.3, 0.3);
+        // let position = Point2::new(0.3, 0.3);
 
         // let coords = bary(&simplex, &position);
 
