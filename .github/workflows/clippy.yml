@@ -7,6 +7,7 @@ concurrency:
 on:
   pull_request:
     branches: [ main ]
+    types: [ closed, opened, reopened ]
   release:
     types: [ created ]
   repository_dispatch:
@@ -22,7 +23,6 @@ permissions:
 
 jobs:
   clippy:
-    name: Clippy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

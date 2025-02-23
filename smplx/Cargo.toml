@@ -34,11 +34,20 @@ blas = [
     "ndarray/blas",
 ]
 
-rayon = [ "ndarray/rayon" ]
+json = [
+    "dep:serde_json",
+    "serde",
+]
+
+
+
+rayon = [ "dep:rayon", "ndarray/rayon", "petgraph/rayon" ]
 
 serde = [
     "dep:serde",
+    "dep:serde_derive",
     "ndarray/serde",
+    "petgraph/serde-1",
     "serde?/derive",
 ]
 
@@ -107,7 +116,11 @@ approx = { default-features = false, optional = true, version = "0.5" }
 ndarray = { default-features = false, version = "0.16" }
 ndarray-linalg = { default-features = false, version = "0.17" }
 num = { default-features = false, version = "0.4" }
+petgraph = { default-features = false, version = "0.7" }
+rayon = { default-features = false, optional = true, version = "1" }
 serde = { default-features = false, optional = true, version = "1" }
+serde_derive = { default-features = false, optional = true, version = "1" }
+serde_json = { default-features = false, optional = true, version = "1" }
 strum = { default-features = false, features = ["derive"], version = "0.27" }
 thiserror = { default-features = false, version = "2" }
 
@@ -117,13 +130,23 @@ approx = "0.5"
 lazy_static = "1"
 
 [package.metadata.docs.rs]
-all-features = true
+all-features = false
+
+features = ["full"]
+no-default-features = false
 rustc-args = [
     "--cfg",
     "docsrs",
 ]
 
 # ********* tests *********
+
+[[test]]
+name = "complex"
+required-features = [
+    "approx",
+]
+
 [[test]]
 name = "quick_hull"
 required-features = [ "approx" ]

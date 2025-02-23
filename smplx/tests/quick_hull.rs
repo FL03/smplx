@@ -8,9 +8,7 @@ use smplx::{NdSimplex, algo::QuickHull};
 #[test]
 fn test_small_input() {
     let points = arr2(&[[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]]);
-    let hull = NdSimplex::from_ndarray(points.clone())
-        .quickhull()
-        .compute();
+    let hull = NdSimplex::from(points.clone()).quickhull().compute();
     // For three points, the hull should just match the original set
     assert_eq!(hull, points, "Hull should match all points for small input");
 }
@@ -24,7 +22,7 @@ fn test_square_points() {
         [0.0, 2.0],
         [1.0, 1.0], // inside the square
     ]);
-    let hull = QuickHull::new(points).compute();
+    let hull = QuickHull::new(points.view()).compute();
     // Expected hull: corners of the square
     // Check that it contains (0,0), (2,0), (2,2), (0,2)
     let expected_corners = vec![
@@ -46,7 +44,7 @@ fn test_square_points() {
 fn test_collinear_points() {
     // Points on a line at x=1, y from 0 to 3
     let points = arr2(&[[1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [1.0, 3.0]]);
-    let hull = QuickHull::new(points).compute();
+    let hull = QuickHull::new(points.view()).compute();
     // For collinear points, the hull should be the endpoints
     assert_eq!(
         hull.nrows(),
@@ -58,7 +56,7 @@ fn test_collinear_points() {
 #[test]
 fn test_repeated_points() {
     let points = arr2(&[[0.0, 0.0], [0.0, 0.0], [1.0, 1.0], [1.0, 1.0]]);
-    let hull = QuickHull::new(points.clone()).compute();
+    let hull = QuickHull::new(points.view()).compute();
     // Even with duplicates, the hull is the line's endpoints
     assert_eq!(hull.nrows(), 2, "Hull should be the two unique endpoints.");
 }
@@ -72,7 +70,7 @@ fn test_triangle_points() {
         [2.0, 2.0],
         [2.0, 1.0], // inside the triangle
     ]);
-    let hull = QuickHull::new(points).compute();
+    let hull = QuickHull::new(points.view()).compute();
     assert_eq!(
         hull.nrows(),
         3,
@@ -92,7 +90,7 @@ fn test_offset_rectangle_points() {
         [1.0, 1.0],  // inside
         [-2.0, 1.0], // inside
     ]);
-    let hull = QuickHull::new(points).compute();
+    let hull = QuickHull::new(points.view()).compute();
     let expected_corners = vec![
         array![-3.0, -2.0],
         array![2.0, -2.0],
@@ -118,7 +116,7 @@ fn test_negative_coords() {
         [-1.0, -3.0],
         [-2.5, -1.5], // inside
     ]);
-    let hull = QuickHull::new(points).compute();
+    let hull = QuickHull::new(points.view()).compute();
     // Expect 4 corners
     assert_eq!(hull.nrows(), 4, "Hull should consist of 4 vertices.");
 }
