@@ -26,26 +26,42 @@ permissions: write-all
 
 jobs:
   build:
-    name: Build
     strategy:
       matrix:
-        platform: [ macos-latest, ubuntu-latest, windows-latest ]
-        toolchain: [ stable, nightly ]
+        platform: [ ubuntu-latest ]
+        toolchain: [ stable ]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
-      - name: setup (rustup)
+      - 
+        name: setup blas
         run: |
-          rustup default ${{ matrix.toolchain }}
-          rustup update
-      - name: build
-        run: cargo build --all-features -r -v --workspace
-      - name: test
-        run: cargo test --all-features -v --workspace
-      - name: bench
+          if [ ${{ matrix.platform }} == 'macos-latest' ]; then
+            brew install openblas
+          elif [ ${{ matrix.platform }} == 'ubuntu-latest' ]; then
+            sudo apt-get install libopenblas-dev
+          fi
+      - 
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: ${{ matrix.toolchain }}
+      - 
+        name: build
+        run: cargo build -r -v --workspace --features full
+      - 
+        name: test
+        run: |
+          if [ ${{ matrix.platform }} == 'macos-latest' ]; then
+            brew install openblas
+          elif [ ${{ matrix.platform }} == 'ubuntu-latest' ]; then
+            cargo test -r -v --workspace --features full,openblas
+          fi
+      - 
+        name: bench
         if: matrix.toolchain == 'nightly'
-        run: cargo bench -F full -v --workspace
-      - uses: actions/cache@v4
+        run: cargo bench -v --workspace --features full
+      - 
+        uses: actions/cache@v4
         with:
           key: ${{ runner.os }}-cargo-${{ matrix.toolchain }}-${{ hashFiles('**/Cargo.lock') }}
           path: |

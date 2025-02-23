@@ -1,0 +1,22 @@
+/*
+    Appellation: ndsimplex <test>
+    Contrib: @FL03
+*/
+use approx::assert_relative_eq;
+use smplx::NdSimplex;
+
+#[test]
+fn test_barycentric_coordinates() {
+    use ndarray::array;
+    let vertices = array![[3.0, 2.0], [5.0, 3.0], [3.0, 4.0]];
+    let simplex = NdSimplex::from_ndarray(vertices);
+    let point = array![0.3, 0.3];
+    let barycentric = simplex.barycentric(point);
+    let expected = array![2.525, -1.35, -0.175];
+    assert_relative_eq!(
+        barycentric,
+        expected,
+        epsilon = f64::EPSILON,
+        max_relative = 0.01
+    )
+}

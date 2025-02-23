@@ -1,57 +1,48 @@
 [workspace]
-default-members = [
-    "smplx"
-]
+default-members = [ "smplx" ]
 
-exclude = []
+exclude = [  ]
 
-members = [
-    "smplx",
-]
+members = [ "smplx" ]
 
-resolver = "2"
-
-[workspace.dependencies]
-# rstmt = { features = ["neo"], git = "https://github.com/FL03/rstmt.git", branch = "v0.0.3" }
-
-anyhow = "1"
-lazy_static = "1"
-paste = "1"
-thiserror = "1"
-
-# hypergraph = "2.1"
-# petgraph = "0.6"
+resolver = "3"
 
 [workspace.package]
-authors = ["Joe McCain III <jo3mccain@icloud.com>",]
-categories = [ ]
-description = "smplx is a topologically oriented crate focused on developing out a framework for working with simplicial objects in Rust."
-edition = "2021"
+authors = [
+    "Joe McCain III <jo3mccain@icloud.com>",
+]
+categories = [ "mathematics" ]
+description = "smplx focuses on the simplex and its applications in mathematics, topology, and other fields."
+edition = "2024"
 homepage = "https://github.com/FL03/smplx/wiki"
-keywords = [ ]
+keywords = [
+    "mathematics",
+    "simplex",
+    "topology",
+]
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/smplx.git"
-version = "0.0.0"
+version = "0.0.1"
 
 [profile.dev]
-opt-level = 0
+codegen-units = 256
 debug = true
 debug-assertions = true
-overflow-checks = true
-lto = false
-panic = 'unwind'
 incremental = true
-codegen-units = 256
+lto = false
+opt-level = 0
+overflow-checks = true
+panic = 'unwind'
 rpath = false
 
 [profile.release]
-opt-level = 3
+codegen-units = 16
 debug = false
 debug-assertions = false
-overflow-checks = false
-lto = false
-panic = 'unwind'
 incremental = false
-codegen-units = 16
+lto = true
+opt-level = 3
+overflow-checks = false
+panic = 'abort'
 rpath = false

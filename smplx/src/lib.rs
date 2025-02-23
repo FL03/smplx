@@ -1,28 +1,51 @@
 /*
-    Appellation: rstopo <module>
+    Appellation: smplx <lib>
     Contrib: FL03 <jo3mccain@icloud.com>
 */
 //! # smplx
 //!
-//! smplx is a research project supporting the Flow protocol
+//! The `smplx` crate is a collection of algorithms and data structures for working with
+//! simplices in n-dimensional space. The crate is designed to be flexible and generic,
+//! allowing users to work with simplices in a variety of contexts.
 #![crate_name = "smplx"]
 #![crate_type = "lib"]
 
-#[cfg(feature = "alloc")]
-extern crate alloc;
-
 #[doc(inline)]
-pub use self::simplex::Simplex;
+pub use self::{algo::prelude::*, error::*, simplex::NdSimplex, traits::prelude::*};
 
-pub mod complex;
-pub mod set;
+pub mod error;
 pub mod simplex;
 
-#[doc(hidden)]
-pub mod state;
+pub mod algo {
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    pub mod quick_hull;
+
+    #[allow(unused_imports)]
+    pub(crate) mod prelude {
+        pub use super::quick_hull::*;
+    }
+}
+
+mod impls {
+    mod impl_ndsimplex;
+}
+
+pub mod traits {
+    #[doc(inline)]
+    pub use self::prelude::*;
+
+    pub mod math;
+
+    pub(crate) mod prelude {
+        pub use super::math::*;
+    }
+}
 
 pub mod prelude {
-    pub use super::complex::prelude::*;
-    pub use super::set::prelude::*;
-    pub use super::simplex::prelude::*;
+    pub use crate::algo::prelude::*;
+    pub use crate::error::*;
+    pub use crate::simplex::NdSimplex;
+    pub use crate::traits::prelude::*;
 }

@@ -1,41 +1,100 @@
 [package]
-authors.workspace = true
 build = "build.rs"
+name = "smplx"
+
+authors.workspace = true
 categories.workspace = true
 description.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 license.workspace = true
-name = "smplx"
 readme.workspace = true
 repository.workspace = true
 version.workspace = true
 
 [features]
-default = [
-    "alloc",
-]
+default = [ "std" ]
 
 full = [
+    "approx",
     "default",
+    "rayon",
     "serde",
 ]
 
 # ********* [FF] Dependencies *********
-alloc = [
-    "serde?/alloc",
+approx = [
+    "dep:approx",
+    "ndarray/approx",
 ]
+
+blas = [
+    "ndarray-linalg/blas",
+    "ndarray/blas",
+]
+
+rayon = [ "ndarray/rayon" ]
 
 serde = [
     "dep:serde",
+    "ndarray/serde",
+    "serde?/derive",
 ]
 
 # ********* [FF] Environments *********
-# std = [
-#     "alloc",
-#     "serde?/std",
-# ]
+std = [
+    "approx?/std",
+    "ndarray/std",
+    "num/std",
+    "serde?/std",
+]
+
+# ********* [FF] blas *********
+intel-mkl = [
+    "blas",
+    "ndarray-linalg/intel-mkl",
+]
+
+intel-mkl-static = [
+    "blas",
+    "ndarray-linalg/intel-mkl-static",
+]
+
+intel-mkl-system = [
+    "blas",
+    "ndarray-linalg/intel-mkl-system",
+]
+
+openblas = [
+    "blas",
+    "ndarray-linalg/openblas",
+]
+
+openblas-system = [
+    "blas",
+    "ndarray-linalg/openblas-system",
+]
+
+openblas-static = [
+    "blas",
+    "ndarray-linalg/openblas-static",
+]
+
+netlib = [
+    "blas",
+    "ndarray-linalg/netlib",
+]
+
+netlib-static = [
+    "blas",
+    "ndarray-linalg/netlib-static",
+]
+
+netlib-system = [
+    "blas",
+    "ndarray-linalg/netlib-system",
+]
 
 [lib]
 bench = true
@@ -43,28 +102,35 @@ crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
 
-[build-dependencies]
-
 [dependencies]
-thiserror.workspace = true
-
-[dependencies.serde]
-features = ["derive"]
-optional = true
-version = "1"
-
-[dependencies.strum]
-features = ["derive"]
-version = "0.26"
+approx = { default-features = false, optional = true, version = "0.5" }
+ndarray = { default-features = false, version = "0.16" }
+ndarray-linalg = { default-features = false, version = "0.17" }
+num = { default-features = false, version = "0.4" }
+serde = { default-features = false, optional = true, version = "1" }
+strum = { default-features = false, features = ["derive"], version = "0.27" }
+thiserror = { default-features = false, version = "2" }
 
 [dev-dependencies]
-anyhow.workspace = true
-lazy_static.workspace = true
+anyhow = "1"
+approx = "0.5"
+lazy_static = "1"
 
 [package.metadata.docs.rs]
 all-features = true
-rustc-args = ["--cfg", "docsrs"]
+rustc-args = [
+    "--cfg",
+    "docsrs",
+]
 
-[target.wasm32-unknown-unknown]
+# ********* tests *********
+[[test]]
+name = "quick_hull"
+required-features = [ "approx" ]
 
-[target.wasm32-wasi]
+[[test]]
+name = "ndsimplex"
+required-features = [
+    "approx",
+    "blas",
+]
