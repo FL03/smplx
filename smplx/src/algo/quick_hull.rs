@@ -2,19 +2,19 @@
     Appellation: quick_hull <mod>
     Contrib: @FL03
 */
-use ndarray::{Array1, Array2, ArrayView1, Axis, Ix, NdFloat};
+use ndarray::{Array1, Array2, ArrayView1, ArrayView2, Axis, Ix, NdFloat};
 
 /// A lazy evaluation of the QuickHull algorithm for computing the convex hull of a set of
 /// points within a simplex;
 #[derive(Clone, Debug)]
-pub struct QuickHull<A> {
-    points: Array2<A>,
+pub struct QuickHull<'a, A> {
+    points: ArrayView2<'a, A>,
     hull: Vec<usize>,
 }
 
-impl<A> QuickHull<A> {
+impl<'a, A> QuickHull<'a, A> {
     /// Constructs a new QuickHull instance from a set of points.
-    pub fn new(points: Array2<A>) -> Self {
+    pub fn new(points: ArrayView2<'a, A>) -> Self {
         Self {
             points,
             hull: Vec::new(),

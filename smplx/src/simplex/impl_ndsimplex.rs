@@ -4,10 +4,12 @@
 */
 use crate::algo::QuickHull;
 use crate::simplex::NdSimplex;
-use ndarray::{Array1, Array2, NdFloat};
+use ndarray::{Array1, Array2, ArrayView1, NdFloat};
 use ndarray_linalg::{Lapack, Scalar, Solve};
+use num::{One, Zero};
 
 impl<A> NdSimplex<A> {
+    /// initializes a new simplex as a single point in 0-dimensional space.
     pub fn new() -> Self
     where
         A: Default,
@@ -16,6 +18,27 @@ impl<A> NdSimplex<A> {
             dim: 0,
             nodes: Array2::default((1, 0)),
         }
+    }
+    /// constructs a new simplex from an iterator of _points_. By definition, each vertex or
+    /// point within a simplex is a one-dimensional set of coordinates. Therefore, we can
+    /// construct a simplex from an iterator of one-dimensional arrays.
+    pub fn from_iter<I>(iter: I) -> Self
+    where
+        A: Clone + Default,
+        I: IntoIterator<Item = Array1<A>>,
+    {
+        let iter = iter.into_iter();
+        let len = iter.size_hint().0;
+        let dim = len - 1;
+        let mut nodes = Array2::default((len, dim));
+        nodes
+            .outer_iter_mut()
+            .zip(iter)
+            .for_each(|(mut row, point)| {
+                row.assign(&point);
+            });
+
+        Self { dim, nodes }
     }
     /// constructs a new simplex from an (N+1) x N matrix
     pub fn from_ndarray(nodes: Array2<A>) -> Self {
@@ -30,7 +53,7 @@ impl<A> NdSimplex<A> {
     /// creates a simplex with the given dimension and all ones
     pub fn ones(dim: usize) -> Self
     where
-        A: Clone + num::One,
+        A: Clone + One,
     {
         let nodes = Array2::ones((dim + 1, dim));
         Self { dim, nodes }
@@ -38,12 +61,35 @@ impl<A> NdSimplex<A> {
     /// creates a simplex with the given dimension and all zeros
     pub fn zeros(dim: usize) -> Self
     where
-        A: Clone + num::Zero,
+        A: Clone + Zero,
     {
         let nodes = Array2::zeros((dim + 1, dim));
         Self { dim, nodes }
     }
-
+    /// get the dimension of the simplex
+    pub fn dim(&self) -> usize {
+        self.dim
+    }
+    /// get an immutable reference to the nodes of the simplex
+    pub fn nodes(&self) -> &Array2<A> {
+        &self.nodes
+    }
+    /// get a mutable reference to the nodes of the simplex
+    pub fn nodes_mut(&mut self) -> &mut Array2<A> {
+        &mut self.nodes
+    }
+    /// a method for checking if the simplex is valid
+    pub fn is_valid(&self) -> bool {
+        self.nodes.nrows() == self.dim + 1 && self.nodes.ncols() == self.dim
+    }
+    /// get the vertex at the given index
+    pub fn get_vertex(&self, index: usize) -> Option<ArrayView1<'_, A>> {
+        if index < self.nodes.nrows() {
+            Some(self.nodes.row(index))
+        } else {
+            None
+        }
+    }
     /// calculate the barycentric coordinates of the given point with respect to the simplex
     pub fn barycentric(&self, point: Array1<A>) -> Array1<A>
     where
@@ -77,11 +123,8 @@ impl<A> NdSimplex<A> {
     }
     /// a lazy evaluator for computing the convex hull of the simplex using the QuickHull
     /// algorithm
-    pub fn quickhull(&self) -> QuickHull<A>
-    where
-        A: NdFloat,
-    {
-        QuickHull::new(self.nodes.clone())
+    pub fn quickhull(&self) -> QuickHull<'_, A> {
+        QuickHull::new(self.nodes.view())
     }
 }
 
@@ -96,5 +139,26 @@ impl<A> core::ops::Deref for NdSimplex<A> {
 impl<A> core::ops::DerefMut for NdSimplex<A> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.nodes
+    }
+}
+
+impl<A> Default for NdSimplex<A>
+where
+    A: Default,
+{
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<A> From<Array2<A>> for NdSimplex<A> {
+    fn from(nodes: Array2<A>) -> Self {
+        Self::from_ndarray(nodes)
+    }
+}
+
+impl<A> From<NdSimplex<A>> for Array2<A> {
+    fn from(simplex: NdSimplex<A>) -> Self {
+        simplex.nodes
     }
 }
