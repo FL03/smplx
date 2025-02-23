@@ -16,6 +16,7 @@ Welcome to smplx, a topologically oriented crate focused on simplexes and their 
 ## Features
 
 - [x] Simplex
+- [x] SimplicialComplex
 
 ## Background
 
@@ -63,13 +64,17 @@ version = "0.0.1"
 ```rust
     extern crate smplx;
 
-    use smplx::Simplex;
+    use smplx::NdSimplex;
 
     fn main() -> Result<(), Box<dyn std::error::Error>> {
         tracing_subscriber::fmt::init();
         tracing::info!("Welcome to smplx!");
 
-        let simplex = Simplex::new().dim(2).with_vertices([0, 1, 2]).build()?;
+        let vertices = vec![array![3.0, 2.0], array![5.0, 3.0], array![3.0, 4.0]];
+        let simplex = NdSimplex::from_iter(vertices);
+        // validate the dimension and the number of nodes
+        assert_eq!(simplex.dim(), 2);
+        assert_eq!(simplex.nodes().shape(), &[3, 2]);
 
         Ok(())
     }

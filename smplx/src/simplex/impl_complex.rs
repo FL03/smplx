@@ -3,10 +3,10 @@
     Contrib: @FL03
 */
 
-use crate::simplex::{NdSimplex, SimplexComplex};
+use crate::simplex::{NdSimplex, SimplicialComplex};
 use petgraph::graph::{DiGraph, NodeIndex};
 
-impl<A, E> SimplexComplex<A, E> {
+impl<A, E> SimplicialComplex<A, E> {
     pub fn new() -> Self {
         Self {
             simplices: DiGraph::new(),
@@ -37,13 +37,13 @@ impl<A, E> SimplexComplex<A, E> {
     }
 }
 
-impl<A, E> Default for SimplexComplex<A, E> {
+impl<A, E> Default for SimplicialComplex<A, E> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<A, E> core::ops::Deref for SimplexComplex<A, E> {
+impl<A, E> core::ops::Deref for SimplicialComplex<A, E> {
     type Target = DiGraph<NdSimplex<A>, E>;
 
     fn deref(&self) -> &Self::Target {
@@ -51,7 +51,7 @@ impl<A, E> core::ops::Deref for SimplexComplex<A, E> {
     }
 }
 
-impl<A, E> core::ops::DerefMut for SimplexComplex<A, E> {
+impl<A, E> core::ops::DerefMut for SimplicialComplex<A, E> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.simplices
     }

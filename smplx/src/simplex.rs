@@ -26,6 +26,6 @@ pub struct NdSimplex<A = f64> {
     feature = "serde",
     derive(serde_derive::Deserialize, serde_derive::Serialize)
 )]
-pub struct SimplexComplex<A = f64, E = ()> {
+pub struct SimplicialComplex<A = f64, E = ()> {
     pub(crate) simplices: petgraph::graph::DiGraph<NdSimplex<A>, E>,
 }
