@@ -11,7 +11,7 @@
 #![crate_type = "lib"]
 
 #[doc(inline)]
-pub use self::{algo::prelude::*, error::*, simplex::NdSimplex, traits::prelude::*};
+pub use self::{algo::prelude::*, error::*, simplex::*, traits::prelude::*};
 
 pub mod error;
 pub mod simplex;
@@ -26,10 +26,6 @@ pub mod algo {
     pub(crate) mod prelude {
         pub use super::quick_hull::*;
     }
-}
-
-mod impls {
-    mod impl_ndsimplex;
 }
 
 pub mod traits {

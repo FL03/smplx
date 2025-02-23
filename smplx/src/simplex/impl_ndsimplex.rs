@@ -4,10 +4,19 @@
 */
 use crate::algo::QuickHull;
 use crate::simplex::NdSimplex;
-use ndarray::{Array1, Array2, ArrayView2, ArrayViewMut2, NdFloat};
+use ndarray::{Array1, Array2, NdFloat};
 use ndarray_linalg::{Lapack, Scalar, Solve};
 
 impl<A> NdSimplex<A> {
+    pub fn new() -> Self
+    where
+        A: Default,
+    {
+        Self {
+            dim: 0,
+            nodes: Array2::default((1, 0)),
+        }
+    }
     /// constructs a new simplex from an (N+1) x N matrix
     pub fn from_ndarray(nodes: Array2<A>) -> Self {
         assert_eq!(
@@ -15,21 +24,24 @@ impl<A> NdSimplex<A> {
             nodes.ncols() + 1,
             "Simplex must have N+1 vertices."
         );
-        Self { nodes }
+        let dim = nodes.ncols();
+        Self { dim, nodes }
     }
     /// creates a simplex with the given dimension and all ones
     pub fn ones(dim: usize) -> Self
     where
         A: Clone + num::One,
     {
-        Self::from_ndarray(Array2::ones((dim + 1, dim)))
+        let nodes = Array2::ones((dim + 1, dim));
+        Self { dim, nodes }
     }
     /// creates a simplex with the given dimension and all zeros
     pub fn zeros(dim: usize) -> Self
     where
         A: Clone + num::Zero,
     {
-        Self::from_ndarray(Array2::zeros((dim + 1, dim)))
+        let nodes = Array2::zeros((dim + 1, dim));
+        Self { dim, nodes }
     }
 
     /// calculate the barycentric coordinates of the given point with respect to the simplex
@@ -37,7 +49,7 @@ impl<A> NdSimplex<A> {
     where
         A: Lapack + Scalar + NdFloat,
     {
-        let dim: usize = self.nodes.ncols();
+        let dim: usize = self.dim;
         let npoints: usize = self.nodes.nrows();
         assert_eq!(
             point.len(),
@@ -62,14 +74,6 @@ impl<A> NdSimplex<A> {
         rhs[dim] = A::one(); // Homogeneous coordinate
         // Solve for barycentric coordinates
         matrix.solve(&rhs).unwrap_or(Array1::zeros(npoints))
-    }
-    /// returns a read-only view of the nodes
-    pub fn viewsa(&self) -> ArrayView2<'_, A> {
-        self.view()
-    }
-    /// returns a mutable view of the nodes
-    pub fn view_mut(&mut self) -> ArrayViewMut2<'_, A> {
-        self.nodes.view_mut()
     }
     /// a lazy evaluator for computing the convex hull of the simplex using the QuickHull
     /// algorithm
