@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use approx::assert_relative_eq;
-use smplx::ndsimplex::NdSimplex;
+use smplx::NdSimplex;
 
 #[test]
 fn test_barycentric_coordinates() {

@@ -3,7 +3,7 @@
     Contrib: @FL03
 */
 use ndarray::{Axis, arr2, array};
-use smplx::ndsimplex::{NdSimplex, QuickHull};
+use smplx::{NdSimplex, algo::QuickHull};
 
 #[test]
 fn test_small_input() {
