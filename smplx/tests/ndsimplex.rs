@@ -3,11 +3,11 @@
     Contrib: @FL03
 */
 use approx::assert_relative_eq;
+use ndarray::array;
 use smplx::NdSimplex;
 
 #[test]
 fn test_simplex_from_iter() {
-    use ndarray::array;
     let vertices = vec![array![3.0, 2.0], array![5.0, 3.0], array![3.0, 4.0]];
     let simplex = NdSimplex::from_iter(vertices);
     assert_eq!(simplex.dim(), 2);
@@ -22,11 +22,10 @@ fn test_simplex_from_iter() {
 
 #[test]
 fn test_barycentric_coordinates() {
-    use ndarray::array;
     let vertices = array![[3.0, 2.0], [5.0, 3.0], [3.0, 4.0]];
     let simplex = NdSimplex::from_ndarray(vertices);
     let point = array![0.3, 0.3];
-    let barycentric = simplex.barycentric(point);
+    let barycentric = simplex.barycentric(point).expect("Barycentric coordinates");
     let expected = array![2.525, -1.35, -0.175];
     assert_relative_eq!(
         barycentric,

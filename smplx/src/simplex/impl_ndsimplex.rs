@@ -91,7 +91,7 @@ impl<A> NdSimplex<A> {
         }
     }
     /// calculate the barycentric coordinates of the given point with respect to the simplex
-    pub fn barycentric(&self, point: Array1<A>) -> Array1<A>
+    pub fn barycentric(&self, point: Array1<A>) -> ndarray_linalg::error::Result<Array1<A>>
     where
         A: Lapack + Scalar + NdFloat,
     {
@@ -119,7 +119,7 @@ impl<A> NdSimplex<A> {
         }
         rhs[dim] = A::one(); // Homogeneous coordinate
         // Solve for barycentric coordinates
-        matrix.solve(&rhs).unwrap_or(Array1::zeros(npoints))
+        matrix.solve(&rhs)
     }
     /// a lazy evaluator for computing the convex hull of the simplex using the QuickHull
     /// algorithm
