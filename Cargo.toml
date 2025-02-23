@@ -7,21 +7,19 @@ members = [ "smplx" ]
 
 resolver = "3"
 
-[workspace.dependencies]
-anyhow = "1"
-lazy_static = "1"
-paste = "1"
-thiserror = { default-features = false, version = "2" }
-
 [workspace.package]
 authors = [
     "Joe McCain III <jo3mccain@icloud.com>",
 ]
-categories = [  ]
-description = "smplx is a topologically oriented crate focused on developing out a framework for working with simplicial objects in Rust."
+categories = [ "mathematics" ]
+description = "smplx focuses on the simplex and its applications in mathematics, topology, and other fields."
 edition = "2024"
 homepage = "https://github.com/FL03/smplx/wiki"
-keywords = [  ]
+keywords = [
+    "mathematics",
+    "simplex",
+    "topology",
+]
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/FL03/smplx.git"

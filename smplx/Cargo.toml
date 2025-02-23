@@ -19,52 +19,33 @@ default = [ "std" ]
 full = [
     "approx",
     "default",
+    "rayon",
     "serde",
 ]
 
 # ********* [FF] Dependencies *********
-alloc = [
-    "nalgebra?/alloc",
-    "num/alloc",
-    "serde?/alloc",
-]
-
 approx = [
     "dep:approx",
-    "ndarray?/approx",
+    "ndarray/approx",
 ]
 
 blas = [
-    "ndarray-linalg?/blas",
-    "ndarray?/blas",
+    "ndarray-linalg/blas",
+    "ndarray/blas",
 ]
 
-nalgebra = [ "dep:nalgebra" ]
-
-ndarray = [
-    "dep:ndarray",
-    "dep:ndarray-linalg",
-]
-
-rayon = [
-    "nalgebra?/rayon",
-    "ndarray?/rayon",
-]
+rayon = [ "ndarray/rayon" ]
 
 serde = [
     "dep:serde",
-    "nalgebra?/serde",
-    "ndarray?/serde",
+    "ndarray/serde",
     "serde?/derive",
 ]
 
 # ********* [FF] Environments *********
 std = [
-    "alloc",
     "approx?/std",
-    "nalgebra?/std",
-
-    "ndarray?/std",
+    "ndarray/std",
     "num/std",
     "serde?/std",
 ]
@@ -72,22 +53,22 @@ std = [
 # ********* [FF] blas *********
 intel-mkl = [
     "blas",
-    "ndarray-linalg?/intel-mkl",
+    "ndarray-linalg/intel-mkl",
 ]
 
 intel-mkl-static = [
     "blas",
-    "ndarray-linalg?/intel-mkl-static",
+    "ndarray-linalg/intel-mkl-static",
 ]
 
 intel-mkl-system = [
     "blas",
-    "ndarray-linalg?/intel-mkl-system",
+    "ndarray-linalg/intel-mkl-system",
 ]
 
 openblas = [
     "blas",
-    "ndarray-linalg?/openblas",
+    "ndarray-linalg/openblas",
 ]
 
 openblas-system = [
@@ -97,60 +78,37 @@ openblas-system = [
 
 openblas-static = [
     "blas",
-    "ndarray-linalg?/openblas-static",
+    "ndarray-linalg/openblas-static",
 ]
 
 netlib = [
     "blas",
-    "ndarray-linalg?/netlib",
+    "ndarray-linalg/netlib",
 ]
 
 netlib-static = [
     "blas",
-    "ndarray-linalg?/netlib-static",
+    "ndarray-linalg/netlib-static",
 ]
 
 netlib-system = [
     "blas",
-    "ndarray-linalg?/netlib-system",
+    "ndarray-linalg/netlib-system",
 ]
 
 [lib]
 bench = true
-crate-type = [
-    "cdylib",
-    "rlib",
-]
+crate-type = ["cdylib", "rlib"]
 doctest = false
 test = true
 
-[[test]]
-name = "quick_hull"
-required-features = [
-    "approx",
-    "default",
-    "ndarray",
-]
-
-[[test]]
-name = "ndsimplex"
-required-features = [
-    "approx",
-    "blas",
-    "default",
-    "ndarray",
-]
-
 [dependencies]
 approx = { default-features = false, optional = true, version = "0.5" }
-nalgebra = { default-features = false, optional = true, version = "0.33" }
-ndarray = { default-features = false, optional = true, version = "0.16" }
-ndarray-linalg = { default-features = false, optional = true, version = "0.17" }
+ndarray = { default-features = false, version = "0.16" }
+ndarray-linalg = { default-features = false, version = "0.17" }
 num = { default-features = false, version = "0.4" }
 serde = { default-features = false, optional = true, version = "1" }
-strum = { default-features = false, features = [
-    "derive",
-], version = "0.27" }
+strum = { default-features = false, features = ["derive"], version = "0.27" }
 thiserror = { default-features = false, version = "2" }
 
 [dev-dependencies]
@@ -163,4 +121,16 @@ all-features = true
 rustc-args = [
     "--cfg",
     "docsrs",
+]
+
+# ********* tests *********
+[[test]]
+name = "quick_hull"
+required-features = [ "approx" ]
+
+[[test]]
+name = "ndsimplex"
+required-features = [
+    "approx",
+    "blas",
 ]

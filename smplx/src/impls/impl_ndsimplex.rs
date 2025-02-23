@@ -2,7 +2,8 @@
     Appellation: impl_ndsimplex <module>
     Contrib: @FL03
 */
-use crate::ndsimplex::{algo, NdSimplex};
+use crate::algo::QuickHull;
+use crate::simplex::NdSimplex;
 use ndarray::{Array1, Array2, ArrayView2, ArrayViewMut2, NdFloat};
 use ndarray_linalg::{Lapack, Scalar, Solve};
 
@@ -63,8 +64,8 @@ impl<A> NdSimplex<A> {
         matrix.solve(&rhs).unwrap_or(Array1::zeros(npoints))
     }
     /// returns a read-only view of the nodes
-    pub fn view(&self) -> ArrayView2<'_, A> {
-        self.nodes.view()
+    pub fn viewsa(&self) -> ArrayView2<'_, A> {
+        self.view()
     }
     /// returns a mutable view of the nodes
     pub fn view_mut(&mut self) -> ArrayViewMut2<'_, A> {
@@ -72,11 +73,11 @@ impl<A> NdSimplex<A> {
     }
     /// a lazy evaluator for computing the convex hull of the simplex using the QuickHull
     /// algorithm
-    pub fn quickhull(&self) -> algo::QuickHull<A>
+    pub fn quickhull(&self) -> QuickHull<A>
     where
         A: NdFloat,
     {
-        algo::QuickHull::new(self.nodes.clone())
+        QuickHull::new(self.nodes.clone())
     }
 }
 

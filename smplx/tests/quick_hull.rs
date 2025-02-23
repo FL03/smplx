@@ -8,7 +8,9 @@ use smplx::ndsimplex::{NdSimplex, QuickHull};
 #[test]
 fn test_small_input() {
     let points = arr2(&[[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]]);
-    let hull = NdSimplex::from_ndarray(points.clone()).quickhull().compute();
+    let hull = NdSimplex::from_ndarray(points.clone())
+        .quickhull()
+        .compute();
     // For three points, the hull should just match the original set
     assert_eq!(hull, points, "Hull should match all points for small input");
 }

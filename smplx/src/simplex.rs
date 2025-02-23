@@ -12,5 +12,3 @@
 pub struct NdSimplex<A = f64> {
     pub(crate) nodes: ndarray::Array2<A>,
 }
-
-

@@ -15,9 +15,7 @@ Welcome to smplx, a topologically oriented crate focused on simplexes and their 
 
 ## Features
 
-- [ ] Simplex
-- [ ] SimplicialComplex
-- [ ] SimplicialSet
+- [x] Simplex
 
 ## Background
 

@@ -15,7 +15,10 @@ pub struct QuickHull<A> {
 impl<A> QuickHull<A> {
     /// Constructs a new QuickHull instance from a set of points.
     pub fn new(points: Array2<A>) -> Self {
-        Self { points, hull: Vec::new() }
+        Self {
+            points,
+            hull: Vec::new(),
+        }
     }
 
     /// Computes the convex hull using the QuickHull algorithm.
@@ -24,7 +27,12 @@ impl<A> QuickHull<A> {
         A: NdFloat,
     {
         if self.points.nrows() <= 3 {
-            return self.remove_duplicates(self.points.axis_iter(Axis(0)).map(|row| row.to_owned()).collect());
+            return self.remove_duplicates(
+                self.points
+                    .axis_iter(Axis(0))
+                    .map(|row| row.to_owned())
+                    .collect(),
+            );
         }
 
         let (min_idx, max_idx) = self.find_extremes();
@@ -34,7 +42,11 @@ impl<A> QuickHull<A> {
         self.quickhull_recursive(min_idx, max_idx, &above);
         self.quickhull_recursive(max_idx, min_idx, &below);
 
-        let hull_points = self.hull.iter().map(|&idx| self.points.row(idx).to_owned()).collect::<Vec<_>>();
+        let hull_points = self
+            .hull
+            .iter()
+            .map(|&idx| self.points.row(idx).to_owned())
+            .collect::<Vec<_>>();
         self.remove_duplicates(hull_points)
     }
 
@@ -129,8 +141,16 @@ impl<A> QuickHull<A> {
         A: NdFloat,
     {
         let col_x = self.points.column(0);
-        let min_idx = col_x.indexed_iter().min_by(|a, b| a.1.partial_cmp(b.1).unwrap()).unwrap().0;
-        let max_idx = col_x.indexed_iter().max_by(|a, b| a.1.partial_cmp(b.1).unwrap()).unwrap().0;
+        let min_idx = col_x
+            .indexed_iter()
+            .min_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+            .unwrap()
+            .0;
+        let max_idx = col_x
+            .indexed_iter()
+            .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+            .unwrap()
+            .0;
         (min_idx, max_idx)
     }
 
